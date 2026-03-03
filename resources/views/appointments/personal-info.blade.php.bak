@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información Personal - Agendar Consulta</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+    @include('components.navbar')
+
+    <!-- Background Decoration -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-12">
+        <!-- Progress Bar -->
+        <div class="mb-12">
+            <div class="flex items-center justify-center space-x-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold shadow-lg shadow-green-500/20">✓</div>
+                    <span class="text-sm mt-2 text-green-600 font-bold">Tipo</span>
+                </div>
+                <div class="w-20 h-1 bg-green-500 rounded-full shadow-sm"></div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold shadow-lg shadow-green-500/20">✓</div>
+                    <span class="text-sm mt-2 text-green-600 font-bold">Fecha</span>
+                </div>
+                <div class="w-20 h-1 bg-blue-600 rounded-full"></div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">3</div>
+                    <span class="text-sm mt-2 text-blue-700 font-bold">Confirmar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heading -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+                Confirmar Cita Gratuita
+            </h1>
+            <p class="text-xl text-gray-500">Completa tus datos para confirmar tu consulta sin costo</p>
+        </div>
+
+        <!-- Resumen de la cita seleccionada -->
+        <div class="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-blue-200 shadow-lg shadow-blue-500/10 relative overflow-hidden">
+             <!-- Glass Shine -->
+             <div class="absolute inset-0 bg-white/20 pointer-events-none"></div>
+
+            <h3 class="font-bold text-gray-800 mb-4 flex items-center relative z-10 text-lg">
+                <span class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-2">📋</span>
+                Resumen de tu cita
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700 relative z-10">
+                <div class="bg-white/50 p-4 rounded-xl border border-white/60">
+                    <span class="block text-xs text-gray-500 uppercase font-semibold mb-1">Especialista</span>
+                    <span class="font-bold text-lg text-gray-800">{{ $horario->especialista->nombre }}</span>
+                </div>
+                <div class="bg-white/50 p-4 rounded-xl border border-white/60">
+                    <span class="block text-xs text-gray-500 uppercase font-semibold mb-1">Especialidad</span>
+                    <span class="font-bold text-lg text-gray-800">{{ $horario->especialista->especialidad }}</span>
+                </div>
+                <div class="bg-white/50 p-4 rounded-xl border border-white/60">
+                    <span class="block text-xs text-gray-500 uppercase font-semibold mb-1">Fecha</span>
+                    <span class="font-bold text-lg text-gray-800">{{ $horario->fecha->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</span>
+                </div>
+                <div class="bg-white/50 p-4 rounded-xl border border-white/60">
+                    <span class="block text-xs text-gray-500 uppercase font-semibold mb-1">Hora</span>
+                    <span class="font-bold text-lg text-gray-800">{{ \Carbon\Carbon::parse($horario->hora_inicio)->format('H:i') }} - {{ \Carbon\Carbon::parse($horario->hora_fin)->format('H:i') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form action="{{ route('appointments.personal-info') }}" method="POST" class="bg-white/60 backdrop-blur-3xl rounded-3xl shadow-2xl shadow-gray-200/50 border border-white/50 p-8 md:p-12 relative overflow-hidden ring-1 ring-white/60">
+            
+            <!-- Glass Shine -->
+            <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
+
+            <div class="relative z-10 space-y-6">
+                @csrf
+                
+                <!-- Nombre Completo -->
+                <div>
+                    <label class="block text-gray-800 font-bold mb-2 ml-1">Nombre Completo *</label>
+                    <input 
+                        type="text" 
+                        name="nombre" 
+                        required
+                        value="{{ old('nombre', auth()->user()->name ?? '') }}"
+                        placeholder="Tu nombre completo"
+                        class="w-full bg-white/50 border border-gray-200 text-gray-800 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-gray-400 shadow-inner"
+                    >
+                    @error('nombre')
+                        <p class="text-red-500 text-sm mt-2 ml-1 font-medium">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-gray-800 font-bold mb-2 ml-1">Correo Electrónico *</label>
+                    <input 
+                        type="email" 
+                        name="email" 
+                        required
+                        value="{{ old('email', auth()->user()->email ?? '') }}"
+                        placeholder="tu@email.com"
+                        class="w-full bg-white/50 border border-gray-200 text-gray-800 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-gray-400 shadow-inner"
+                    >
+                    @error('email')
+                        <p class="text-red-500 text-sm mt-2 ml-1 font-medium">{{ $message }}</p>
+                    @enderror
+                    <p class="text-sm text-gray-500 mt-2 ml-1">Te enviaremos la confirmación de tu cita a este correo</p>
+                </div>
+
+                <!-- Teléfono -->
+                <div>
+                    <label class="block text-gray-800 font-bold mb-2 ml-1">Teléfono *</label>
+                    <input 
+                        type="tel" 
+                        name="telefono" 
+                        required
+                        value="{{ old('telefono') }}"
+                        placeholder="55 1234 5678"
+                        class="w-full bg-white/50 border border-gray-200 text-gray-800 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-gray-400 shadow-inner"
+                    >
+                    @error('telefono')
+                        <p class="text-red-500 text-sm mt-2 ml-1 font-medium">{{ $message }}</p>
+                    @enderror
+                    <p class="text-sm text-gray-500 mt-2 ml-1">Para poder contactarte en caso necesario</p>
+                </div>
+
+                <!-- Nota de privacidad -->
+                <div class="bg-blue-50/50 rounded-xl p-5 border border-blue-100 shadow-sm backdrop-blur-sm">
+                    <div class="flex items-start">
+                        <div class="bg-blue-100 text-blue-600 p-2 rounded-full mr-3 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-sm text-blue-900">
+                            <p class="font-bold mb-1 text-base">Privacidad y Confidencialidad</p>
+                            <p class="leading-relaxed opacity-90">Tus datos personales serán tratados con total confidencialidad y solo serán utilizados para gestionar tu cita. No compartimos tu información con terceros.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex justify-between items-center pt-8 border-t border-gray-100">
+                    <button type="button" onclick="window.history.back()" class="px-6 py-3 text-gray-500 hover:text-gray-800 font-semibold transition-colors flex items-center group">
+                         <span class="group-hover:-translate-x-1 transition-transform mr-2">←</span> Volver
+                    </button>
+                    <button type="submit" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all hover:-translate-y-1 ring-2 ring-white/20">
+                        Confirmar Cita Gratuita <span class="ml-2">→</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+
+    @include('components.footer')
+</body>
+</html>

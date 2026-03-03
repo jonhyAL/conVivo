@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Cita Confirmada! - ArcaneCode</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+    @include('components.navbar')
+
+    <!-- Background Decoration -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-green-500/10 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-12">
+        <!-- Success Animation -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-green-400 to-green-600 mb-6 animate-bounce shadow-lg shadow-green-500/30 ring-4 ring-green-100">
+                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-green-600 via-green-700 to-green-800 bg-clip-text text-transparent drop-shadow-sm">
+                ¡Cita Confirmada!
+            </h1>
+            <p class="text-xl text-gray-500">Tu consulta ha sido agendada exitosamente</p>
+        </div>
+
+        <!-- Detalles de la Cita -->
+        <div class="bg-white/60 backdrop-blur-3xl rounded-3xl shadow-2xl shadow-gray-200/50 border border-white/50 p-8 md:p-12 mb-10 relative overflow-hidden ring-1 ring-white/60">
+             <!-- Glass Shine -->
+             <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
+
+            <div class="flex items-center mb-8 relative z-10">
+                <span class="bg-green-100 text-green-600 p-3 rounded-2xl mr-4 shadow-sm">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </span>
+                <h2 class="text-2xl font-bold text-gray-800">Detalles de tu Cita</h2>
+            </div>
+
+            <!-- Referencia -->
+            <div class="bg-gradient-to-r from-blue-50/80 to-cyan-50/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-blue-100 relative z-10">
+                <p class="text-sm text-gray-500 mb-1 uppercase tracking-wide font-semibold">Número de Referencia</p>
+                <p class="text-3xl font-bold text-blue-700 tracking-wider font-mono">{{ $cita->id }}-{{ strtoupper(substr($cita->email_cliente, 0, 3)) }}</p>
+            </div>
+
+            <div class="space-y-8 relative z-10">
+                <!-- Especialista -->
+                <div class="border-b border-gray-100 pb-8">
+                    <div class="flex items-center space-x-6">
+                        @if($cita->especialista->foto)
+                            <img src="{{ asset('storage/' . $cita->especialista->foto) }}" alt="{{ $cita->especialista->nombre }}" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg">
+                        @else
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-4xl text-blue-600 border-4 border-white shadow-lg">
+                                👤
+                            </div>
+                        @endif
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Especialista</p>
+                            <p class="font-bold text-2xl text-gray-800 mb-1">{{ $cita->especialista->nombre }}</p>
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-semibold">{{ $cita->especialista->especialidad }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fecha y Hora -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-b border-gray-100 pb-8">
+                    <div class="bg-white/40 p-5 rounded-2xl border border-white/60">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </span>
+                            <p class="text-sm font-bold text-gray-500 uppercase">Fecha</p>
+                        </div>
+                        <p class="text-xl font-bold text-gray-800 pl-2">{{ $cita->horario->fecha->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</p>
+                    </div>
+                    <div class="bg-white/40 p-5 rounded-2xl border border-white/60">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </span>
+                            <p class="text-sm font-bold text-gray-500 uppercase">Horario</p>
+                        </div>
+                        <p class="text-xl font-bold text-gray-800 pl-2">{{ \Carbon\Carbon::parse($cita->horario->hora_inicio)->format('H:i') }} - {{ \Carbon\Carbon::parse($cita->horario->hora_fin)->format('H:i') }}</p>
+                    </div>
+                </div>
+
+                <!-- Ubicación y Tipo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-2">
+                             <span class="bg-red-100 text-red-600 p-1.5 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                             </span>
+                            <p class="text-sm text-gray-500 uppercase font-bold">Ubicación</p>
+                        </div>
+                        <p class="text-lg font-bold text-gray-800 ml-10">{{ $cita->localidad }}</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="bg-purple-100 text-purple-600 p-1.5 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </span>
+                            <p class="text-sm text-gray-500 uppercase font-bold">Tipo de Consulta</p>
+                        </div>
+                        <p class="text-lg font-bold text-gray-800 ml-10">{{ $cita->tipo_consulta }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmación por Email -->
+        <div class="bg-blue-50/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-blue-100 shadow-lg shadow-blue-500/5">
+            <div class="flex items-start space-x-4">
+                <div class="bg-blue-100 text-blue-600 p-3 rounded-full flex-shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-2">Confirmación Enviada</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">Hemos enviado un correo de confirmación a <span class="font-bold text-blue-700 bg-blue-100/50 px-2 py-0.5 rounded">{{ $cita->email_cliente }}</span> con todos los detalles de tu cita.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="bg-white/60 backdrop-blur-md rounded-2xl shadow-lg shadow-gray-200/50 p-8 mb-10 border border-white/60">
+            <h3 class="font-bold text-gray-800 mb-6 flex items-center text-lg">
+                <span class="bg-orange-100 text-orange-600 p-2 rounded-lg mr-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </span>
+                Instrucciones Importantes
+            </h3>
+            <ul class="space-y-4 text-gray-600">
+                <li class="flex items-start p-3 bg-white/50 rounded-xl border border-white/60">
+                    <span class="text-green-500 mr-3 mt-0.5 bg-green-100 rounded-full p-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </span>
+                    <span>Por favor, llega <strong>10 minutos antes</strong> de tu cita para el registro.</span>
+                </li>
+                <li class="flex items-start p-3 bg-white/50 rounded-xl border border-white/60">
+                    <span class="text-green-500 mr-3 mt-0.5 bg-green-100 rounded-full p-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </span>
+                    <span>Trae tu <strong>número de referencia</strong> y una <strong>identificación oficial</strong> vigente.</span>
+                </li>
+                <li class="flex items-start p-3 bg-white/50 rounded-xl border border-white/60">
+                     <span class="text-green-500 mr-3 mt-0.5 bg-green-100 rounded-full p-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </span>
+                    <span>Si necesitas cancelar o reprogramar, contáctanos con al menos <strong>24 horas de anticipación</strong>.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onclick="window.print()" class="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl font-bold shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all hover:-translate-y-1 text-center flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                Imprimir Cita
+            </button>
+            @auth
+            <a href="{{ route('dashboard') }}" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all hover:-translate-y-1 text-center">
+                Ir a Mi Panel
+            </a>
+            @endauth
+            <a href="{{ route('welcome') }}" class="px-8 py-4 bg-white border border-gray-200 hover:border-blue-300 text-gray-600 hover:text-blue-700 rounded-2xl font-bold shadow-md hover:shadow-lg transition-all text-center">
+                Volver al Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+
+    @include('components.footer')
+</body>
+</html>

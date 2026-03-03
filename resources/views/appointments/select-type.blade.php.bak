@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Consulta - Tipo de Consulta</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+    @include('components.navbar')
+
+    <!-- Background Decoration -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-12">
+        <!-- Progress Bar -->
+        <div class="mb-12">
+            <div class="flex items-center justify-center space-x-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">1</div>
+                    <span class="text-sm mt-2 text-blue-700 font-bold">Tipo</span>
+                </div>
+                <div class="w-20 h-1 bg-gray-200 rounded-full"></div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-white text-gray-400 flex items-center justify-center font-bold border border-gray-200">2</div>
+                    <span class="text-sm mt-2 text-gray-400 font-medium">Fecha</span>
+                </div>
+                <div class="w-20 h-1 bg-gray-200 rounded-full"></div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-white text-gray-400 flex items-center justify-center font-bold border border-gray-200">3</div>
+                    <span class="text-sm mt-2 text-gray-400 font-medium">Confirmar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heading -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+                Agendar Consulta
+            </h1>
+            <p class="text-xl text-gray-500">Selecciona el tipo de ayuda que necesitas</p>
+        </div>
+
+        <!-- Form -->
+        <form action="{{ route('appointments.calendar') }}" method="POST" class="bg-white/60 backdrop-blur-3xl rounded-3xl shadow-2xl shadow-gray-200/50 border border-white/50 p-8 md:p-12 relative overflow-hidden ring-1 ring-white/60">
+            
+            <!-- Glass Shine -->
+            <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                @csrf
+
+                <!-- Localidad -->
+                <div class="mb-10">
+                    <label class="block text-gray-800 font-bold mb-4 text-lg flex items-center">
+                        <span class="bg-blue-100/50 text-blue-600 p-2 rounded-lg mr-2 text-xl">📍</span> Selecciona tu localidad
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="localidad" value="Nezahualcóyotl" required class="peer hidden">
+                            <div class="bg-white/50 border border-white/60 rounded-2xl p-6 hover:bg-white/80 transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50/50 peer-checked:shadow-lg peer-checked:shadow-blue-500/10 hover:shadow-md ring-1 ring-black/5 peer-checked:ring-blue-500/20">
+                                <div class="flex items-center space-x-3">
+                                    <div class="bg-blue-100 text-blue-600 p-3 rounded-full peer-checked:bg-blue-600 peer-checked:text-white transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-lg font-bold text-gray-700 peer-checked:text-blue-800">Nezahualcóyotl</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="localidad" value="Puebla" required class="peer hidden">
+                            <div class="bg-white/50 border border-white/60 rounded-2xl p-6 hover:bg-white/80 transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50/50 peer-checked:shadow-lg peer-checked:shadow-blue-500/10 hover:shadow-md ring-1 ring-black/5 peer-checked:ring-blue-500/20">
+                                <div class="flex items-center space-x-3">
+                                    <div class="bg-blue-100 text-blue-600 p-3 rounded-full peer-checked:bg-blue-600 peer-checked:text-white transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-lg font-bold text-gray-700 peer-checked:text-blue-800">Puebla</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    @error('localidad')
+                        <p class="text-red-500 text-sm mt-2 ml-1 font-medium">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Tipo de Consulta -->
+                <div class="mb-10">
+                    <label class="block text-gray-800 font-bold mb-4 text-lg flex items-center">
+                        <span class="bg-purple-100/50 text-purple-600 p-2 rounded-lg mr-2 text-xl">🧠</span> ¿Qué tipo de ayuda necesitas?
+                    </label>
+                    <div class="grid grid-cols-1 gap-4">
+                        @php
+                            $especialidades = \App\Models\Especialista::where('activo', true)
+                                ->select('especialidad')
+                                ->distinct()
+                                ->pluck('especialidad');
+                            
+                            $iconos = [
+                                'Psicología' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>',
+                                'Psiquiatría' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>',
+                                'Terapia Familiar' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>',
+                                'Terapia Infantil' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
+                                'Apoyo Emocional' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>'
+                            ];
+                            
+                            $descripciones = [
+                                'Psicología' => 'Terapia psicológica profesional para manejar emociones, ansiedad, depresión y otros temas de salud mental.',
+                                'Psiquiatría' => 'Atención médica especializada en salud mental con diagnóstico y tratamiento farmacológico.',
+                                'Terapia Familiar' => 'Terapia enfocada en mejorar la comunicación y resolver conflictos familiares.',
+                                'Terapia Infantil' => 'Atención especializada para niños y adolescentes con problemas emocionales o conductuales.',
+                                'Apoyo Emocional' => 'Consejería y apoyo para momentos difíciles, crisis emocionales o cuando necesitas alguien que te escuche.'
+                            ];
+                        @endphp
+
+                        @foreach($especialidades as $esp)
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="tipo_consulta" value="{{ $esp }}" required class="peer hidden">
+                            <div class="bg-white/50 border border-white/60 rounded-2xl p-5 hover:bg-white/80 transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50/50 peer-checked:shadow-lg peer-checked:shadow-purple-500/10 hover:shadow-md ring-1 ring-black/5 peer-checked:ring-purple-500/20">
+                                <div class="flex items-start space-x-4">
+                                    <div class="bg-purple-100 text-purple-600 p-3 rounded-full peer-checked:bg-purple-600 peer-checked:text-white transition-colors flex-shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            {!! $iconos[$esp] ?? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' !!}
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-purple-700 transition">{{ $esp }}</h3>
+                                        <p class="text-gray-500 text-sm leading-relaxed">{{ $descripciones[$esp] ?? 'Atención profesional especializada.' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        @endforeach
+
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="tipo_consulta" value="No estoy seguro" required class="peer hidden">
+                            <div class="bg-white/50 border border-white/60 rounded-2xl p-5 hover:bg-white/80 transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50/50 peer-checked:shadow-lg peer-checked:shadow-purple-500/10 hover:shadow-md ring-1 ring-black/5 peer-checked:ring-purple-500/20">
+                                <div class="flex items-start space-x-4">
+                                    <div class="bg-gray-100 text-gray-600 p-3 rounded-full peer-checked:bg-purple-600 peer-checked:text-white transition-colors flex-shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-purple-700 transition">No estoy seguro/a</h3>
+                                        <p class="text-gray-500 text-sm leading-relaxed">Te ayudaremos a identificar el tipo de apoyo que mejor se ajuste a tu situación.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="mb-12">
+                    <label class="block text-gray-800 font-bold mb-4 text-lg flex items-center">
+                        <span class="bg-pink-100/50 text-pink-600 p-2 rounded-lg mr-2 text-xl">📝</span> Cuéntanos brevemente sobre tu situación
+                    </label>
+                    <div class="relative">
+                        <textarea 
+                            name="descripcion" 
+                            rows="5" 
+                            required
+                            placeholder="Describe aquí lo que te está afectando o por qué buscas ayuda..."
+                            class="w-full bg-white/50 border border-gray-200 text-gray-800 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-gray-400 shadow-inner"
+                        ></textarea>
+                        <div class="absolute bottom-4 right-4 text-gray-400 text-xs pointer-events-none">Confidencial</div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        Esta información es 100% privada y segura.
+                    </p>
+                    @error('descripcion')
+                        <p class="text-red-500 text-sm mt-2 font-medium">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex justify-between items-center pt-6 border-t border-gray-100">
+                    <a href="{{ route('help') }}" class="px-6 py-3 text-gray-500 hover:text-gray-800 font-semibold transition-colors flex items-center group">
+                        <span class="group-hover:-translate-x-1 transition-transform mr-2">←</span> Volver
+                    </a>
+                    <button type="submit" class="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all hover:-translate-y-1 ring-2 ring-white/20">
+                        Continuar <span class="ml-2">→</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @include('components.footer')
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportar Incidente - ArcaneCode</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+    @include('components.navbar')
+
+    <!-- Background Decoration -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-10 left-10 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-cyan-400/20 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8)_0%,transparent_100%)]"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-12">
+        <!-- Alert Success Message -->
+        @if(session('success'))
+        <div id="successAlert" class="mb-8 bg-green-100/60 backdrop-blur-xl border border-green-200 rounded-3xl p-6 shadow-lg shadow-green-500/10 animate-fade-in-up">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 bg-green-100 rounded-full p-2">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4 flex-1">
+                    <h3 class="text-lg font-bold text-green-800 mb-1">Reporte Enviado Exitosamente</h3>
+                    <p class="text-green-700 text-sm">{{ session('success') }}</p>
+                </div>
+                <button onclick="document.getElementById('successAlert').remove()" class="text-green-600 hover:text-green-800 transition-colors p-1 rounded-full hover:bg-green-200/50">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        @endif
+
+        <!-- Header Section -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 mb-4 backdrop-blur-sm border border-white/40 shadow-sm">
+                <span class="text-3xl">🛡️</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm">
+                Hacer un Reporte Anónimo
+            </h1>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+                Tu seguridad es nuestra prioridad. Este formulario es completamente anónimo y confidencial. 
+                Toda la información será tratada con la máxima seriedad.
+            </p>
+        </div>
+
+        <!-- Important Notes -->
+        <div class="grid md:grid-cols-2 gap-6 mb-10">
+            <!-- Nota sobre crear cuenta -->
+            <div class="bg-white/60 backdrop-blur-xl border border-white/60 rounded-3xl p-6 shadow-xl shadow-blue-500/5 hover:shadow-blue-500/10 transition-shadow">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 bg-blue-100/80 rounded-2xl p-3">
+                        <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Mayor eficiencia</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Te recomendamos <a href="{{ route('register') }}" class="font-bold text-blue-600 hover:text-blue-700 underline decoration-blue-300 hover:decoration-blue-600 transition-all">crear una cuenta</a> 
+                            para seguimiento efectivo y comunicación segura a través del chat interno.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advertencia sobre reportes falsos -->
+            <div class="bg-white/60 backdrop-blur-xl border border-white/60 rounded-3xl p-6 shadow-xl shadow-red-500/5 hover:shadow-red-500/10 transition-shadow">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 bg-red-100/80 rounded-2xl p-3">
+                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Advertencia</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Los reportes falsos tendrán <span class="font-bold text-red-600">consecuencias legales y académicas</span>. 
+                            Proporciona información veraz y precisa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="relative group">
+            <!-- Glass Shine -->
+             <div class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-30 transition duration-500"></div>
+            
+            <!-- Form Container -->
+            <div class="relative bg-white/70 backdrop-blur-3xl rounded-[2rem] border border-white/60 p-8 md:p-12 shadow-2xl ring-1 ring-black/5">
+                <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+                    @csrf
+
+                    <!-- Tipo de Incidente -->
+                    <div class="relative group/field">
+                         <div class="absolute -inset-2 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl blur opacity-0 group-hover/field:opacity-50 transition duration-300"></div>
+                        <label for="tipo_incidente" class="relative block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                            <span class="text-red-500 mr-1">*</span> Tipo de Incidente
+                        </label>
+                        <div class="relative">
+                            <select 
+                                name="tipo_incidente" 
+                                id="tipo_incidente" 
+                                required
+                                class="w-full px-5 py-4 bg-white/50 border border-gray-200 rounded-2xl text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 appearance-none shadow-sm cursor-pointer hover:bg-white/80"
+                            >
+                                <option value="" selected disabled>Selecciona el tipo de incidente</option>
+                                <option value="acoso_sexual">🚨 Acoso Sexual</option>
+                                <option value="bullying">😔 Bullying / Acoso Escolar</option>
+                                <option value="abuso_autoridad">⚖️ Abuso de Autoridad</option>
+                                <option value="injusticia_academica">📚 Injusticia Académica</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                        @error('tipo_incidente')
+                            <p class="text-red-500 text-sm mt-2 pl-2 font-medium flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Descripción del Incidente -->
+                    <div class="relative group/field">
+                        <div class="absolute -inset-2 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl blur opacity-0 group-hover/field:opacity-50 transition duration-300"></div>
+                        <label for="descripcion" class="relative block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                            <span class="text-red-500 mr-1">*</span> Descripción del Incidente
+                        </label>
+                        <textarea 
+                            name="descripcion" 
+                            id="descripcion" 
+                            rows="6" 
+                            required
+                            placeholder="Por favor, describe lo que sucedió con el mayor detalle posible. Incluye fechas, lugares y cualquier otra información relevante..."
+                            class="w-full px-5 py-4 bg-white/50 border border-gray-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 resize-none shadow-sm hover:bg-white/80"
+                        >{{ old('descripcion') }}</textarea>
+                        @error('descripcion')
+                            <p class="text-red-500 text-sm mt-2 pl-2 font-medium flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>{{ $message }}</p>
+                        @enderror
+                        <p class="relative text-gray-400 text-xs mt-2 text-right">Mínimo 10 caracteres</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Grupo (Opcional) -->
+                        <div class="relative group/field">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl blur opacity-0 group-hover/field:opacity-50 transition duration-300"></div>
+                            <label for="grupo" class="relative block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                                Grupo <span class="text-gray-400 text-xs font-normal normal-case ml-1">(Opcional)</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="grupo" 
+                                id="grupo"
+                                value="{{ old('grupo') }}"
+                                placeholder="Ej: 3°A, 5°B..."
+                                class="w-full px-5 py-4 bg-white/50 border border-gray-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm hover:bg-white/80"
+                            >
+                            @error('grupo')
+                                <p class="text-red-500 text-sm mt-2 pl-2 font-medium flex items-center">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Nombre del Agresor (Opcional) -->
+                        <div class="relative group/field">
+                             <div class="absolute -inset-2 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl blur opacity-0 group-hover/field:opacity-50 transition duration-300"></div>
+                            <label for="nombre_agresor" class="relative block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                                Nombre del Agresor <span class="text-gray-400 text-xs font-normal normal-case ml-1">(Opcional)</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="nombre_agresor" 
+                                id="nombre_agresor"
+                                value="{{ old('nombre_agresor') }}"
+                                placeholder="Si conoces el nombre..."
+                                class="w-full px-5 py-4 bg-white/50 border border-gray-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm hover:bg-white/80"
+                            >
+                            @error('nombre_agresor')
+                                <p class="text-red-500 text-sm mt-2 pl-2 font-medium flex items-center">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Adjuntar Archivos -->
+                    <div>
+                        <label for="archivos" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                            Adjuntar Pruebas <span class="text-gray-400 text-xs font-normal normal-case ml-1">(Opcional)</span>
+                        </label>
+                        <div class="relative group cursor-pointer">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-200 to-cyan-200 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+                            <input 
+                                type="file" 
+                                name="archivos[]" 
+                                id="archivos"
+                                multiple
+                                accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                                class="hidden"
+                                onchange="updateFileList(this)"
+                            >
+                            <label 
+                                for="archivos" 
+                                class="relative flex flex-col items-center justify-center w-full px-6 py-10 bg-white/50 border-2 border-dashed border-blue-200/50 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-white/80 transition-all duration-300 group-hover:scale-[1.01]"
+                            >
+                                <div class="bg-blue-50 rounded-full p-4 mb-3 group-hover:bg-blue-100 transition-colors">
+                                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-700 text-center font-medium">
+                                    Click para subir archivos <span class="text-blue-500">o arrastra y suelta</span>
+                                </span>
+                                <span class="text-gray-400 text-xs mt-2 bg-white/60 px-2 py-1 rounded-md">
+                                    JPG, PNG, PDF, DOC (Máx. 10MB)
+                                </span>
+                            </label>
+                        </div>
+                        <div id="fileList" class="mt-4 space-y-2"></div>
+                        @error('archivos.*')
+                            <p class="text-red-500 text-sm mt-2 pl-2 font-medium flex items-center">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Información de Privacidad -->
+                    <div class="bg-blue-50/50 backdrop-blur-sm border border-blue-100 rounded-2xl p-6 flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-blue-100 rounded-xl p-2">
+                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-blue-900 font-bold mb-1">Privacidad Protegida</h4>
+                            <p class="text-blue-800/80 text-sm leading-relaxed">
+                                Este reporte es completamente anónimo. No se requiere identificación personal. 
+                                Toda la información será tratada con confidencialidad.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-center pt-6">
+                        <button 
+                            type="submit"
+                            class="relative group px-12 py-5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-lg font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-1 transform overflow-hidden"
+                        >
+                            <span class="relative z-10 flex items-center">
+                                📤 Enviar Reporte
+                            </span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="mt-16 text-center">
+            <p class="text-gray-400 mb-6 text-sm font-semibold uppercase tracking-wider">¿Necesitas ayuda inmediata?</p>
+            <div class="flex flex-wrap justify-center gap-6">
+                 <a href="tel:911" class="group relative px-8 py-4 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-red-100 hover:border-red-200">
+                    <div class="absolute inset-0 bg-red-50 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity"></div>
+                    <span class="relative flex items-center text-red-600 font-bold">
+                        <span class="mr-2 text-2xl">🚨</span> Emergencias: 911
+                    </span>
+                </a>
+                <a href="tel:988" class="group relative px-8 py-4 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-100 hover:border-purple-200">
+                     <div class="absolute inset-0 bg-purple-50 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity"></div>
+                    <span class="relative flex items-center text-purple-600 font-bold">
+                        <span class="mr-2 text-2xl">💬</span> Línea de Crisis: 988
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateFileList(input) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            if (input.files.length > 0) {
+                Array.from(input.files).forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'flex items-center justify-between bg-white/60 backdrop-blur-sm border border-blue-200/50 rounded-xl px-4 py-3 shadow-sm animate-fade-in-up';
+                    fileItem.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-gray-700 text-sm font-medium truncate max-w-[200px]">${file.name}</span>
+                                <span class="text-gray-400 text-xs">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                            </div>
+                        </div>
+                        <span class="text-green-500 bg-green-50 rounded-full p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </span>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            }
+        }
+
+        // Auto-hide success alert
+        setTimeout(() => {
+            const alert = document.getElementById('successAlert');
+            if (alert) {
+                alert.style.transition = 'all 0.5s ease-out';
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-20px)';
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 10000);
+
+         // Helper for animation class
+         const style = document.createElement('style');
+         style.innerHTML = `
+            @keyframes fade-in-up {
+                0% { opacity: 0; transform: translateY(10px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in-up {
+                animation: fade-in-up 0.5s ease-out forwards;
+            }
+            @keyframes shimmer {
+                100% { transform: translateX(100%); }
+            }
+            .animate-shimmer {
+                animation: shimmer 1.5s infinite;
+            }
+         `;
+         document.head.appendChild(style);
+    </script>
+
+    @include('components.footer')
+</body>
+</html>

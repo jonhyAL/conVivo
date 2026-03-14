@@ -1,15 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, Edit, Trash2, Plus, X, User, Mail, Lock, Save, Camera, Eye, MapPin, Phone, Calendar, Heart, Shield, AlertTriangle, Activity, Filter } from 'lucide-react';
 import axios from 'axios';
 
-export default function UsersTable({ users, initialFilterRisk = false, onClearFilter }) {
+export default function UsersTable({ users, initialFilterRisk = false, onClearFilter, initialSearch = '' }) {
     const [list, setList] = useState(users);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [riskFilter, setRiskFilter] = useState(initialFilterRisk);
 
     useEffect(() => {
         setRiskFilter(initialFilterRisk);
     }, [initialFilterRisk]);
+
+    useEffect(() => {
+        setSearchTerm(initialSearch);
+    }, [initialSearch]);
     
     // Modal & Form State for Create/Edit
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +26,7 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
 
     // Modal State for View User
     const [viewingUser, setViewingUser] = useState(null);
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
 
     const filteredUsers = list.filter(user => {
         const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -72,13 +78,13 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('¿Estás seguro de eliminar este usuario?')) return;
-
         try {
             await axios.delete(`/admin/users/${id}`); 
             setList(list.filter(user => user.id !== id));
+            setDeleteConfirm(null);
         } catch (error) {
             console.error('Error deleting user:', error);
+            setDeleteConfirm(null);
             if (error.response && error.response.status === 403) {
                  alert(error.response.data.message);
             } else {
@@ -159,7 +165,7 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
                     </div>
                     <button 
                         onClick={handleCreate}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                        className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors font-medium shadow-lg shadow-teal-900/40"
                     >
                         <Plus size={18} />
                         <span className="hidden md:inline">Nuevo Usuario</span>
@@ -208,7 +214,7 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
                                         <Edit size={16} />
                                     </button>
                                     <button 
-                                        onClick={() => handleDelete(user.id)}
+                                        onClick={() => setDeleteConfirm(user.id)}
                                         className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                                         title="Eliminar Usuario"
                                     >
@@ -228,119 +234,118 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
                 </table>
             </div>
 
-            {/* Create/Edit Modal */}
+            {/* Create/Edit Drawer */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
-                    <div className="bg-gray-900 border border-white/10 rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative my-auto">
-                         <button 
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-white"
-                        >
-                            <X size={24} />
-                        </button>
-                        
-                        <div className="p-6 border-b border-white/10">
-                            <h3 className="text-xl font-bold text-white">
+                <div className="fixed inset-0 z-50 flex items-stretch justify-end">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
+                    <div className="relative h-full w-full max-w-md bg-slate-900 border-l border-slate-700/60 shadow-2xl flex flex-col overflow-hidden">
+
+                        {/* Sticky header */}
+                        <div className="shrink-0 bg-slate-900 border-b border-slate-800 px-5 py-4 flex items-center justify-between">
+                            <h2 className="font-bold text-white text-sm">
                                 {editingUser ? 'Editar Usuario' : 'Nuevo Usuario'}
-                            </h3>
-                            <p className="text-sm text-gray-400 mt-1">
-                                {editingUser ? 'Modifica los datos de acceso del usuario' : 'Crea una nueva cuenta de acceso'}
-                            </p>
+                            </h2>
+                            <button onClick={() => setIsModalOpen(false)} className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                                <X size={15} />
+                            </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            <div className="flex flex-col items-center justify-center mb-6">
-                                <div 
-                                    className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-dashed border-gray-500 hover:border-blue-500 cursor-pointer group transition-colors"
-                                    onClick={triggerFileInput}
-                                >
-                                    {previewUrl ? (
-                                        <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full bg-white/10 flex items-center justify-center text-gray-400">
-                                            <User size={40} />
+                        {/* Scrollable body + footer as form */}
+                        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+
+                                {/* Avatar */}
+                                <div className="flex flex-col items-center gap-2">
+                                    <div
+                                        className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-dashed border-slate-600 hover:border-teal-500 cursor-pointer group transition-colors"
+                                        onClick={triggerFileInput}
+                                    >
+                                        {previewUrl ? (
+                                            <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-500">
+                                                <User size={32} />
+                                            </div>
+                                        )}
+                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Camera className="text-white" size={20} />
                                         </div>
-                                    )}
-                                    
-                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Camera className="text-white" size={24} />
                                     </div>
+                                    <p className="text-xs text-slate-500">Click para cambiar foto</p>
+                                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                                    {errors.avatar && <p className="text-red-400 text-xs">{errors.avatar[0]}</p>}
                                 </div>
-                                <p className="text-xs text-gray-400 mt-2">Click para cambiar foto de perfil</p>
-                                <input 
-                                    type="file" 
-                                    ref={fileInputRef}
-                                    className="hidden" 
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
-                                {errors.avatar && <p className="text-red-400 text-xs mt-1">{errors.avatar[0]}</p>}
+
+                                {/* Nombre */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Nombre Completo <span className="text-red-400">*</span></label>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={15} />
+                                        <input
+                                            type="text"
+                                            className="w-full pl-9 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-600 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all text-sm"
+                                            placeholder="Nombre Usuario"
+                                            value={formData.name}
+                                            onChange={e => setFormData({...formData, name: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name[0]}</p>}
+                                </div>
+
+                                {/* Email */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Correo Electrónico <span className="text-red-400">*</span></label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={15} />
+                                        <input
+                                            type="email"
+                                            className="w-full pl-9 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-600 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all text-sm"
+                                            placeholder="correo@ejemplo.com"
+                                            value={formData.email}
+                                            onChange={e => setFormData({...formData, email: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email[0]}</p>}
+                                </div>
+
+                                {/* Password */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
+                                        {editingUser ? 'Nueva Contraseña (Opcional)' : <>'Contraseña <span className="text-red-400">*</span>'</>}
+                                    </label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={15} />
+                                        <input
+                                            type="password"
+                                            className="w-full pl-9 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-600 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all text-sm"
+                                            placeholder={editingUser ? 'Dejar en blanco para no cambiar' : 'Mínimo 8 caracteres'}
+                                            value={formData.password}
+                                            onChange={e => setFormData({...formData, password: e.target.value})}
+                                            required={!editingUser}
+                                            minLength={8}
+                                        />
+                                    </div>
+                                    {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password[0]}</p>}
+                                </div>
+
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Nombre Completo</label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-2.5 text-gray-500" size={18} />
-                                    <input 
-                                        type="text" 
-                                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                                        placeholder="Nombre Usuario"
-                                        value={formData.name}
-                                        onChange={e => setFormData({...formData, name: e.target.value})}
-                                        required
-                                    />
-                                </div>
-                                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name[0]}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Correo Electrónico</label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-2.5 text-gray-500" size={18} />
-                                    <input 
-                                        type="email" 
-                                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                                        placeholder="correo@ejemplo.com"
-                                        value={formData.email}
-                                        onChange={e => setFormData({...formData, email: e.target.value})}
-                                        required
-                                    />
-                                </div>
-                                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email[0]}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">
-                                    {editingUser ? 'Nueva Contraseña (Opcional)' : 'Contraseña'}
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-2.5 text-gray-500" size={18} />
-                                    <input 
-                                        type="password" 
-                                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                                        placeholder={editingUser ? "Dejar en blanco para no cambiar" : "Mínimo 8 caracteres"}
-                                        value={formData.password}
-                                        onChange={e => setFormData({...formData, password: e.target.value})}
-                                        required={!editingUser}
-                                        minLength={8}
-                                    />
-                                </div>
-                                {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password[0]}</p>}
-                            </div>
-
-                            <div className="pt-4 flex justify-end gap-3">
-                                <button 
+                            {/* Sticky footer */}
+                            <div className="shrink-0 border-t border-slate-800 px-5 py-4 flex items-center justify-end gap-3">
+                                <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                                    className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-sm font-bold hover:bg-slate-700 transition-colors"
                                 >
                                     Cancelar
                                 </button>
-                                <button 
+                                <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                                    className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-2 shadow-lg shadow-teal-900/40"
                                 >
-                                    <Save size={18} />
+                                    <Save size={15} />
                                     Guardar
                                 </button>
                             </div>
@@ -350,18 +355,18 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
             )}
 
             {/* View Details Modal */}
-            {viewingUser && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
-                    <div className="bg-gray-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden relative my-auto animate-fade-in-up">
+            {viewingUser && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+                    <div className="bg-gray-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative animate-scale-up custom-scrollbar">
                          <button 
                             onClick={() => setViewingUser(null)}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 rounded-full p-1"
+                            className="sticky top-4 right-4 ml-auto text-gray-400 hover:text-white bg-black/50 backdrop-blur rounded-full p-2 z-10 block mb-[-40px]"
                         >
                             <X size={24} />
                         </button>
                         
                         {/* Header with Photo */}
-                        <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 p-8 flex flex-col items-center border-b border-white/10">
+                        <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 p-8 flex flex-col items-center border-b border-white/10 relative">
                             <div className="w-24 h-24 rounded-full border-4 border-gray-900 shadow-xl overflow-hidden mb-4">
                                 {viewingUser.photo_path ? (
                                     <img src={`/storage/${viewingUser.photo_path}`} alt={viewingUser.name} className="w-full h-full object-cover" />
@@ -371,15 +376,15 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
                                     </div>
                                 )}
                             </div>
-                            <h2 className="text-2xl font-bold text-white">{viewingUser.name}</h2>
-                            <p className="text-blue-200">{viewingUser.email}</p>
-                            <p className="text-xs text-gray-400 mt-2">Registrado el {new Date(viewingUser.created_at).toLocaleDateString()}</p>
+                            <h2 className="text-2xl font-bold text-white text-center">{viewingUser.name}</h2>
+                            <p className="text-blue-200 text-center">{viewingUser.email}</p>
+                            <p className="text-xs text-gray-400 mt-2 text-center">Registrado el {new Date(viewingUser.created_at).toLocaleDateString()}</p>
                         </div>
 
-                        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                             
                             {/* Personal Info Column */}
-                            <div>
+                            <div className="space-y-6">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
                                     <User size={20} className="text-blue-400" /> Información Personal
                                 </h3>
@@ -418,27 +423,27 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
 
                                     <div>
                                         <p className="text-xs text-gray-500 uppercase tracking-wider">Teléfono</p>
-                                        <p className="text-gray-300 font-medium flex items-center gap-2">
-                                            <Phone size={14} className="text-gray-500" />
+                                        <p className="text-gray-300 font-medium flex items-center gap-2 break-all">
+                                            <Phone size={14} className="text-gray-500 flex-shrink-0" />
                                             {viewingUser.phone_number || 'No registrado'}
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-xs text-gray-500 uppercase tracking-wider">Fecha de Nacimiento</p>
                                         <p className="text-gray-300 font-medium flex items-center gap-2">
-                                            <Calendar size={14} className="text-gray-500" />
+                                            <Calendar size={14} className="text-gray-500 flex-shrink-0" />
                                             {viewingUser.birthdate ? new Date(viewingUser.birthdate).toLocaleDateString() : 'No registrada'}
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-xs text-gray-500 uppercase tracking-wider">Ubicación</p>
                                         <p className="text-gray-300 font-medium flex items-center gap-2">
-                                            <MapPin size={14} className="text-gray-500" />
+                                            <MapPin size={14} className="text-gray-500 flex-shrink-0" />
                                             {viewingUser.location || 'No registrada'}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider">Compartir Ubicación en Emergencia</p>
+                                        <p className="text-xs text-gray-500 uppercase tracking-wider">Ubicación en Emergencia</p>
                                         <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mt-1 ${Boolean(viewingUser.location_enabled) ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                                             {Boolean(viewingUser.location_enabled) ? <Shield size={12} /> : <AlertTriangle size={12} />}
                                             {Boolean(viewingUser.location_enabled) ? 'ACTIVADO' : 'DESACTIVADO'}
@@ -453,21 +458,21 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
                                     <Heart size={20} className="text-rose-400" /> Familiares / Contactos
                                 </h3>
                                 
-                                <div className="space-y-3">
+                                <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                                     {(viewingUser.family_members || viewingUser.familyMembers || []).length > 0 ? (
                                         (viewingUser.family_members || viewingUser.familyMembers).map(member => (
                                             <div key={member.id} className={`p-3 rounded-lg border ${Boolean(member.is_primary_contact) ? 'bg-rose-900/20 border-rose-500/30' : 'bg-white/5 border-white/5'}`}>
-                                                <div className="flex justify-between items-start">
+                                                <div className="flex justify-between items-start flex-wrap gap-2">
                                                     <div>
-                                                        <p className="font-bold text-gray-200">{member.name}</p>
+                                                        <p className="font-bold text-gray-200 break-words">{member.name}</p>
                                                         <p className="text-sm text-gray-400">{member.relationship}</p>
                                                     </div>
                                                     {Boolean(member.is_primary_contact) && (
-                                                        <span className="bg-rose-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">Principal</span>
+                                                        <span className="bg-rose-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full whitespace-nowrap">Principal</span>
                                                     )}
                                                 </div>
                                                 <div className="mt-2 flex items-center gap-2 text-sm text-rose-300">
-                                                    <Phone size={12} /> {member.phone_number}
+                                                    <Phone size={12} className="flex-shrink-0" /> {member.phone_number}
                                                 </div>
                                             </div>
                                         ))
@@ -479,6 +484,27 @@ export default function UsersTable({ users, initialFilterRisk = false, onClearFi
                                 </div>
                             </div>
 
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Delete confirmation overlay */}
+            {deleteConfirm && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                    <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+                        <h3 className="font-bold text-white text-base mb-2">¿Eliminar usuario?</h3>
+                        <p className="text-slate-400 text-sm mb-5">Esta acción no se puede deshacer.</p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setDeleteConfirm(null)}
+                                className="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-sm font-bold hover:bg-slate-700 transition-colors">
+                                Cancelar
+                            </button>
+                            <button onClick={() => handleDelete(deleteConfirm)}
+                                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-colors">
+                                Eliminar
+                            </button>
                         </div>
                     </div>
                 </div>

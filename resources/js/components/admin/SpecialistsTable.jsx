@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
-import { Search, Plus, Edit, Trash2, MapPin, Phone, User, Stethoscope, Save, X, Calendar } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, MapPin, Phone, User, Stethoscope, Save, X, Calendar, Brain, Heart, Users, Pill, Scale, Baby, Leaf, Activity, Shield, BookOpen, Briefcase, GraduationCap } from 'lucide-react';
 import axios from 'axios';
 import SpecialistScheduleModal from './SpecialistScheduleModal';
+
+const SPECIALIST_ICONS = [
+    { name: 'Stethoscope', component: Stethoscope, label: 'Medicina' },
+    { name: 'Brain',       component: Brain,       label: 'Psicología' },
+    { name: 'Heart',       component: Heart,       label: 'Apoyo emocional' },
+    { name: 'Users',       component: Users,       label: 'Terapia familiar' },
+    { name: 'User',        component: User,        label: 'Individual' },
+    { name: 'Pill',        component: Pill,        label: 'Psiquiatría' },
+    { name: 'Scale',       component: Scale,       label: 'Derecho' },
+    { name: 'Baby',        component: Baby,        label: 'Infantil' },
+    { name: 'Leaf',        component: Leaf,        label: 'Nutrición' },
+    { name: 'Activity',    component: Activity,    label: 'Salud' },
+    { name: 'Shield',      component: Shield,      label: 'Protección' },
+    { name: 'BookOpen',    component: BookOpen,    label: 'Trabajo social' },
+    { name: 'Briefcase',   component: Briefcase,   label: 'Profesional' },
+    { name: 'GraduationCap', component: GraduationCap, label: 'Educación' },
+];
 
 export default function SpecialistsTable({ specialists, appointments = [] }) {
     const [list, setList] = useState(specialists);
@@ -15,9 +32,11 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
         especialidad: '',
         descripcion: '',
         localidad: '',
+        icon_class: 'Stethoscope',
         activo: true
     });
     const [errors, setErrors] = useState({});
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
 
     // Predefined lists for consistancy and validation
     const specialties = [
@@ -42,7 +61,7 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
 
     const handleCreate = () => {
         setEditingId(null);
-        setFormData({ nombre: '', especialidad: '', descripcion: '', localidad: '', activo: true });
+        setFormData({ nombre: '', especialidad: '', descripcion: '', localidad: '', icon_class: 'Stethoscope', activo: true });
         setIsModalOpen(true);
     };
 
@@ -53,6 +72,7 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
             especialidad: specialist.especialidad,
             descripcion: specialist.descripcion || '',
             localidad: specialist.localidad || '',
+            icon_class: specialist.icon_class || 'Stethoscope',
             activo: specialist.activo
         });
         setIsModalOpen(true);
@@ -64,13 +84,13 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('¿Estás seguro de eliminar este especialista?')) return;
-        
         try {
             await axios.delete(`/admin/especialistas/${id}`);
             setList(list.filter(item => item.id !== id));
+            setDeleteConfirm(null);
         } catch (error) {
             console.error('Error deleting specialist:', error);
+            setDeleteConfirm(null);
             alert('Error al eliminar especialista');
         }
     };
@@ -128,7 +148,7 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
                     </div>
                     <button 
                         onClick={handleCreate}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                        className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors font-medium shadow-lg shadow-teal-900/40"
                     >
                         <Plus size={18} />
                         <span className="hidden md:inline">Nuevo Especialista</span>
@@ -188,7 +208,7 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
                                         <Edit size={16} />
                                     </button>
                                     <button 
-                                        onClick={() => handleDelete(item.id)}
+                                        onClick={() => setDeleteConfirm(item.id)}
                                         className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                                     >
                                         <Trash2 size={16} />
@@ -200,109 +220,157 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
                 </table>
             </div>
 
-            {/* Modal for Create/Edit */}
+            {/* Create/Edit Drawer */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-                    {/* ...existing modal code... */}
-                    <div className="bg-gray-900 border border-white/10 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-                        <div className="p-6 border-b border-white/10 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-white">
+                <div className="fixed inset-0 z-50 flex items-stretch justify-end">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
+                    <div className="relative h-full w-full max-w-md bg-slate-900 border-l border-slate-700/60 shadow-2xl flex flex-col overflow-hidden">
+
+                        {/* Sticky header */}
+                        <div className="shrink-0 bg-slate-900 border-b border-slate-800 px-5 py-4 flex items-center justify-between">
+                            <h2 className="font-bold text-white text-sm">
                                 {editingId ? 'Editar Especialista' : 'Nuevo Especialista'}
-                            </h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
-                                <X size={24} />
+                            </h2>
+                            <button onClick={() => setIsModalOpen(false)} className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                                <X size={15} />
                             </button>
                         </div>
-                        
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Nombre Completo</label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-2.5 text-gray-500" size={18} />
-                                    <input 
-                                        type="text" 
-                                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                                        placeholder="Dr. Juan Pérez"
-                                        value={formData.nombre}
-                                        onChange={e => setFormData({...formData, nombre: e.target.value})}
-                                        required
+
+                        {/* Scrollable body + footer as form */}
+                        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+
+                                {/* Nombre */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Nombre Completo <span className="text-red-400">*</span></label>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={15} />
+                                        <input
+                                            type="text"
+                                            className="w-full pl-9 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-600 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all text-sm"
+                                            placeholder="Dr. Juan Pérez"
+                                            value={formData.nombre}
+                                            onChange={e => setFormData({...formData, nombre: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    {errors.nombre && <p className="text-red-400 text-xs mt-1">{errors.nombre[0]}</p>}
+                                </div>
+
+                                {/* Especialidad */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Especialidad <span className="text-red-400">*</span></label>
+                                    <div className="relative">
+                                        <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={15} />
+                                        <select
+                                            className="w-full pl-9 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-slate-200 appearance-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all text-sm"
+                                            value={formData.especialidad}
+                                            onChange={e => setFormData({...formData, especialidad: e.target.value})}
+                                            required
+                                        >
+                                            <option value="" className="bg-slate-900 text-slate-400">Seleccionar especialidad</option>
+                                            {specialties.map(spec => (
+                                                <option key={spec} value={spec} className="bg-slate-900 text-white">{spec}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {errors.especialidad && <p className="text-red-400 text-xs mt-1">{errors.especialidad[0]}</p>}
+                                </div>
+
+                                {/* Localidad */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Localidad <span className="text-red-400">*</span></label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" size={15} />
+                                        <select
+                                            className="w-full pl-9 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-slate-200 appearance-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all text-sm"
+                                            value={formData.localidad}
+                                            onChange={e => setFormData({...formData, localidad: e.target.value})}
+                                            required
+                                        >
+                                            <option value="" className="bg-slate-900 text-slate-400">Seleccionar ubicación</option>
+                                            {locations.map(loc => (
+                                                <option key={loc} value={loc} className="bg-slate-900 text-white">{loc}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {errors.localidad && <p className="text-red-400 text-xs mt-1">{errors.localidad[0]}</p>}
+                                </div>
+
+                                {/* Descripción */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Descripción</label>
+                                    <textarea
+                                        className="w-full px-3 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-600 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all text-sm h-24 resize-none"
+                                        placeholder="Breve reseña profesional..."
+                                        value={formData.descripcion}
+                                        onChange={e => setFormData({...formData, descripcion: e.target.value})}
                                     />
                                 </div>
-                                {errors.nombre && <p className="text-red-400 text-xs mt-1">{errors.nombre[0]}</p>}
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Especialidad</label>
-                                <div className="relative">
-                                    <Stethoscope className="absolute left-3 top-2.5 text-gray-500" size={18} />
-                                    <select 
-                                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white appearance-none focus:outline-none focus:border-blue-500"
-                                        value={formData.especialidad}
-                                        onChange={e => setFormData({...formData, especialidad: e.target.value})}
-                                        required
-                                    >
-                                        <option value="" className="bg-gray-900 text-gray-400">Seleccionar especialidad</option>
-                                        {specialties.map(spec => (
-                                            <option key={spec} value={spec} className="bg-gray-900 text-white">{spec}</option>
-                                        ))}
-                                    </select>
+                                {/* Ícono */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">Ícono del especialista</label>
+                                    <div className="grid grid-cols-7 gap-1.5">
+                                        {SPECIALIST_ICONS.map(({ name, component: IconComp, label }) => {
+                                            const isSelected = formData.icon_class === name;
+                                            return (
+                                                <button
+                                                    key={name}
+                                                    type="button"
+                                                    title={label}
+                                                    onClick={() => setFormData({ ...formData, icon_class: name })}
+                                                    className={`flex items-center justify-center w-full aspect-square rounded-xl transition-all border ${
+                                                        isSelected
+                                                            ? 'bg-teal-500/20 border-teal-500 text-teal-400 ring-1 ring-teal-500/50'
+                                                            : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200'
+                                                    }`}
+                                                >
+                                                    <IconComp size={16} />
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {formData.icon_class && (
+                                        <p className="text-[11px] text-teal-400 mt-1.5 flex items-center gap-1">
+                                            {(() => { const ic = SPECIALIST_ICONS.find(i => i.name === formData.icon_class); return ic ? <><ic.component size={11} /> {ic.label}</> : null; })()}
+                                        </p>
+                                    )}
                                 </div>
-                                {errors.especialidad && <p className="text-red-400 text-xs mt-1">{errors.especialidad[0]}</p>}
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Localidad</label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-3 top-2.5 text-gray-500" size={18} />
-                                    <select 
-                                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white appearance-none focus:outline-none focus:border-blue-500"
-                                        value={formData.localidad}
-                                        onChange={e => setFormData({...formData, localidad: e.target.value})}
-                                        required
+                                {/* Estado activo */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Estado</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({...formData, activo: !formData.activo})}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                                            formData.activo
+                                                ? 'bg-teal-500/15 text-teal-400 border border-teal-500/30'
+                                                : 'bg-slate-800 text-slate-500 border border-slate-700'
+                                        }`}
                                     >
-                                        <option value="" className="bg-gray-900 text-gray-400">Seleccionar ubicación</option>
-                                        {locations.map(loc => (
-                                            <option key={loc} value={loc} className="bg-gray-900 text-white">{loc}</option>
-                                        ))}
-                                    </select>
+                                        <div className={`w-2 h-2 rounded-full ${formData.activo ? 'bg-teal-400' : 'bg-slate-600'}`} />
+                                        {formData.activo ? 'Activo' : 'Inactivo'}
+                                    </button>
                                 </div>
-                                {errors.localidad && <p className="text-red-400 text-xs mt-1">{errors.localidad[0]}</p>}
+
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Descripción</label>
-                                <textarea 
-                                    className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500 h-24 resize-none"
-                                    placeholder="Breve reseña profesional..."
-                                    value={formData.descripcion}
-                                    onChange={e => setFormData({...formData, descripcion: e.target.value})}
-                                ></textarea>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                <input 
-                                    type="checkbox" 
-                                    id="activo"
-                                    className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
-                                    checked={formData.activo}
-                                    onChange={e => setFormData({...formData, activo: e.target.checked})}
-                                />
-                                <label htmlFor="activo" className="text-sm text-gray-300">Cuenta Activa</label>
-                            </div>
-
-                            <div className="pt-4 flex justify-end gap-3">
-                                <button 
+                            {/* Sticky footer */}
+                            <div className="shrink-0 border-t border-slate-800 px-5 py-4 flex items-center justify-end gap-3">
+                                <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                                    className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-sm font-bold hover:bg-slate-700 transition-colors"
                                 >
                                     Cancelar
                                 </button>
-                                <button 
+                                <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                                    className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-2 shadow-lg shadow-teal-900/40"
                                 >
-                                    <Save size={18} />
+                                    <Save size={15} />
                                     Guardar
                                 </button>
                             </div>
@@ -318,6 +386,26 @@ export default function SpecialistsTable({ specialists, appointments = [] }) {
                     allAppointments={appointments}
                     onClose={() => setScheduleModalOpen(false)} 
                 />
+            )}
+
+            {/* Delete confirmation overlay */}
+            {deleteConfirm && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                    <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+                        <h3 className="font-bold text-white text-base mb-2">¿Eliminar especialista?</h3>
+                        <p className="text-slate-400 text-sm mb-5">Esta acción no se puede deshacer.</p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setDeleteConfirm(null)}
+                                className="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-sm font-bold hover:bg-slate-700 transition-colors">
+                                Cancelar
+                            </button>
+                            <button onClick={() => handleDelete(deleteConfirm)}
+                                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-colors">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

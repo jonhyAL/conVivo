@@ -9,6 +9,8 @@ use App\Models\Report;
 use App\Models\Especialista;
 use App\Models\Cita;
 use App\Models\SOSAlert;
+use App\Models\Contact;
+use App\Models\RecursoProtocolo;
 
 class DashboardController extends Controller
 {
@@ -27,8 +29,12 @@ class DashboardController extends Controller
             // Citas hoy count (simple query if possible, or loaded with citas)
             'appointments_today' => Cita::whereHas('horario', function($q) {
                 $q->whereDate('fecha', today());
-            })->count()
+            })->count(),
+            'contacts_unread' => Contact::where('is_read', false)->count()
         ];
+        
+        // Fetch Contacts
+        $contacts = Contact::orderBy('created_at', 'desc')->get();
 
         // Fetch recent SOS Alerts with user info
         $sosAlerts = SOSAlert::with('user')
@@ -63,6 +69,9 @@ class DashboardController extends Controller
         $specialists = Especialista::withCount('citas')->get();
         $appointments = Cita::with(['especialista', 'horario', 'user'])->latest()->take(50)->get();
         
+        // Recursos y Protocolos (all, for admin CRUD)
+        $recursos = RecursoProtocolo::orderBy('sort_order')->orderBy('created_at', 'desc')->get();
+
         // Chart Data (Users last 7 days)
         $usersChart = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -80,7 +89,9 @@ class DashboardController extends Controller
             'reports', 
             'specialists', 
             'appointments',
-            'usersChart'
+            'usersChart',
+            'contacts',
+            'recursos'
         ));
     }
 

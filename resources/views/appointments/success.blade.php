@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cita Confirmada</title>
+    <script>if(localStorage.panelTheme==='dark'){document.documentElement.classList.add('dark');}</script>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
-<body class="bg-gray-50">
+<body class="bg-slate-50 dark:bg-slate-950">
     <div id="user-appointment-success-root" 
          data-cita="{{ json_encode($cita) }}">
     </div>

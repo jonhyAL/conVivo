@@ -45,9 +45,12 @@ class DashboardController extends Controller
         ];
 
         // Check if daily mood is logged (Check-in explicit)
-        $hasMoodToday = \App\Models\DailyMood::where('user_id', $user->id)
+        $todayMood = \App\Models\DailyMood::where('user_id', $user->id)
             ->whereDate('created_at', today())
-            ->exists();
+            ->first();
+        
+        $hasMoodToday = (bool) $todayMood;
+        $currentMoodValue = $todayMood ? $todayMood->mood_level : null;
 
         // Get mood data for chart (Last 7 days)
         // Combine DailyMood (1-5) and JournalEntry (mapped string->int)
@@ -69,15 +72,22 @@ class DashboardController extends Controller
             ->where('created_at', '>=', $startDate)
             ->get()
             ->map(function ($item) {
-                // Map emojis and text to values (1-5)
                 $moodMap = [
-                    'feliz' => 5, 'bien' => 4, 'neutral' => 3, 'triste' => 2, 'enojado' => 1, 'ansioso' => 1,
-                    '😊' => 5, '😎' => 5,
-                    '🤔' => 3, '😴' => 3,
-                    '😔' => 2,
-                    '😡' => 1, '😰' => 1, '😭' => 1
+                    // Text mappings (legacy)
+                    'feliz' => 5, 'muy bien' => 5, 'bien' => 4, 'neutral' => 3, 
+                    'triste' => 2, 'mal' => 2, 'enojado' => 1, 'ansioso' => 1, 'muy mal' => 1,
+                    
+                    // Dashboard/React Emoji Set (Primary)
+                    '😁' => 5, // Very Good
+                    '🙂' => 4, // Good
+                    '😐' => 3, // Neutral
+                    '😔' => 2, // Bad
+                    '😰' => 1, // Very Bad (Anxious)
+
+                    // Extra emojis (Legacy support)
+                    '😊' => 5, '😎' => 5, '🤔' => 3, '😴' => 3, '😡' => 1, '😭' => 1
                 ];
-                $val = isset($moodMap[$item->mood]) ? $moodMap[$item->mood] : 3;
+                $val = $moodMap[$item->mood] ?? 3;
                 return [
                     'date' => $item->created_at->format('Y-m-d'),
                     'value' => $val,
@@ -91,15 +101,20 @@ class DashboardController extends Controller
             ->map(function ($group) {
                 return [
                     'date' => \Carbon\Carbon::parse($group[0]['date'])->format('d/m'),
-                    'value' => round($group->avg('value'), 1) // Round to 1 decimal
+                    'value' => round($group->avg('value'), 1)
                 ];
-            })
-            ->sortBy(function ($item, $key) {
-                return \Carbon\Carbon::createFromFormat('d/m', $item['date'])->timestamp;
             })
             ->values();
 
-        return view('dashboard', compact('user', 'appointments', 'reports', 'courses', 'hasMoodToday', 'moodData'));
+        return \Inertia\Inertia::render('Dashboard', [
+            'user' => $user,
+            'appointments' => $appointments,
+            'reports' => $reports,
+            'courses' => $courses,
+            'hasMoodToday' => $hasMoodToday,
+            'currentMoodValue' => $currentMoodValue,
+            'moodData' => $moodData,
+        ]);
     }
 
     public function storeMood(Request $request)

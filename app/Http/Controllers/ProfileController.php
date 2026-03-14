@@ -11,7 +11,13 @@ class ProfileController extends Controller
     public function index()
     {
         $user = auth()->user()->load('familyMembers');
-        return view('profile', compact('user'));
+        return \Inertia\Inertia::render('Profile', [
+            'user' => $user,
+            'success' => session('status'),
+            'serverErrors' => session()->has('errors')
+                ? session('errors')->getBag('default')->all()
+                : [],
+        ]);
     }
 
     public function update(Request $request)

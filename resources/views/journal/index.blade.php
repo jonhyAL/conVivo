@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Diario - ArcaneCode</title>
+    <title>Mi Diario - conVivo</title>
+    <script>if(localStorage.panelTheme==='dark'){document.documentElement.classList.add('dark');}</script>
+    <link rel="icon" href="{{ asset('images/logos/logo-unico.png') }}" type="image/png">
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -25,7 +27,7 @@
         .bg-pattern-coffee { background: linear-gradient(135deg, #271c19 0%, #431407 100%); color: #ffedd5; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans text-slate-800 pb-24 relative" 
+<body class="bg-slate-50 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-200 pb-24 relative selection:bg-teal-500/30" 
       x-data="{ 
           activeTab: '{{ (request('tab') === 'write' || isset($entry)) ? 'write' : 'list' }}',
           currentBackground: '{{ isset($entry) ? $entry->background : 'default' }}',
@@ -34,37 +36,34 @@
           get isDark() { return ['dark', 'calm', 'midnight', 'forest', 'coffee'].includes(this.currentBackground); }
       }">
     <div id="mobile-header-root" data-user="{{ json_encode(auth()->user()) }}"></div>
-    
-    <!-- Background Decoration -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-0 right-0 w-80 h-80 bg-teal-100/40 rounded-full blur-[80px]"></div>
-        <div class="absolute bottom-0 left-0 w-80 h-80 bg-blue-100/40 rounded-full blur-[80px]"></div>
-    </div>
+
 
     <!-- Main Content -->
     <div class="relative z-10 max-w-5xl mx-auto px-4 pt-20 pb-4">
         
         <!-- Header & Tabs -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-            <div class="mb-4 md:mb-0 text-center md:text-left text-slate-900">
+            <div class="mb-4 md:mb-0 text-center md:text-left text-slate-900 dark:text-slate-100">
                 <h1 class="text-2xl font-bold flex items-center justify-center md:justify-start">
-                    <span class="bg-gradient-to-br from-pink-500 to-purple-600 text-white p-2 rounded-lg mr-3 shadow-lg text-lg">✍️</span> 
+                    <span class="bg-gradient-to-br from-teal-500 to-teal-700 text-white p-2 rounded-lg mr-3 shadow-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    </span> 
                     <span>Mi Diario</span>
                 </h1>
             </div>
 
             <!-- Tab Switcher -->
-            <div class="flex p-1 bg-white/80 backdrop-blur-md rounded-xl border border-slate-200 shadow-sm w-full md:w-auto">
+            <div class="flex p-1 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm w-full md:w-auto">
                 <button 
                     @click="activeTab = 'list'" 
-                    :class="activeTab === 'list' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'"
+                    :class="activeTab === 'list' ? 'bg-slate-800 dark:bg-teal-600 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'"
                     class="flex-1 px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 transform"
                 >
                     Entradas
                 </button>
                 <button 
                     @click="if('{{ isset($entry) }}') { window.location.href = '{{ route('journal.index', ['tab' => 'write']) }}'; } else { activeTab = 'write'; }" 
-                    :class="activeTab === 'write' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'"
+                    :class="activeTab === 'write' ? 'bg-slate-800 dark:bg-teal-600 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'"
                     class="flex-1 px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 transform"
                 >
                     Escribir
@@ -79,7 +78,7 @@
             
              <div class="mb-4 text-center">
                 <div class="inline-flex items-center bg-yellow-100/80 backdrop-blur-md text-yellow-800 px-3 py-1 rounded-full text-xs font-medium border border-yellow-200">
-                    <span class="mr-1">🔒</span>
+                    <span class="mr-1 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg></span>
                     100% privado y encriptado
                 </div>
             </div>
@@ -89,34 +88,34 @@
                     @foreach($entries as $histEntry)
                     @php
                         $borderClass = match($histEntry->background ?? 'default') {
-                            'warm' => 'border-amber-200 bg-amber-50/50',
-                            'rose' => 'border-pink-300 bg-pink-50/50',
-                            'lavender' => 'border-purple-300 bg-purple-50/50',
-                            'nature' => 'border-emerald-300 bg-emerald-50/50',
-                            'sunset' => 'border-orange-300 bg-orange-50/50',
-                            'calm' => 'border-red-500 bg-red-50/50',
-                            'forest' => 'border-green-800 bg-green-50/50',
-                            'midnight' => 'border-indigo-900 bg-indigo-50/50',
-                            'coffee' => 'border-yellow-900 bg-yellow-50/50',
-                            'dark' => 'border-slate-800 bg-slate-100',
-                            default => 'border-slate-200 bg-white',
+                            'warm' => 'border-amber-400',
+                            'rose' => 'border-pink-400',
+                            'lavender' => 'border-purple-400',
+                            'nature' => 'border-emerald-400',
+                            'sunset' => 'border-orange-400',
+                            'calm' => 'border-red-500',
+                            'forest' => 'border-green-700',
+                            'midnight' => 'border-indigo-700',
+                            'coffee' => 'border-yellow-700',
+                            'dark' => 'border-slate-500',
+                            default => 'border-slate-300 dark:border-slate-600',
                         };
                     @endphp
                     <div class="relative group">
-                        <a href="{{ route('journal.show', $histEntry->id) }}" class="block p-4 rounded-xl border-l-4 shadow-sm hover:shadow-md transition-all {{ $borderClass }}">
+                        <a href="{{ route('journal.show', $histEntry->id) }}" class="block p-4 rounded-xl border-l-4 shadow-sm hover:shadow-md transition-all bg-white dark:bg-slate-900 {{ $borderClass }}">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">{{ $histEntry->created_at->format('d M, Y') }}</span>
+                                <span class="text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">{{ $histEntry->created_at->format('d M, Y') }}</span>
                                 @if($histEntry->mood)
                                     <span class="text-xl group-hover:scale-110 transition-transform">{{ $histEntry->mood }}</span>
                                 @endif
                             </div>
-                            <h3 class="font-bold text-slate-700 mb-1 truncate group-hover:text-pink-600 transition-colors">{{ $histEntry->title }}</h3>
-                            <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">{{ Str::limit($histEntry->content, 100) }}</p>
+                            <h3 class="font-bold text-slate-700 dark:text-slate-200 mb-1 truncate group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">{{ $histEntry->title }}</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed">{{ Str::limit($histEntry->content, 100) }}</p>
                         </a>
                         <form action="{{ route('journal.destroy', $histEntry->id) }}" method="POST" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="p-1.5 bg-red-100 text-red-500 rounded-lg hover:bg-red-200" onclick="return confirm('¿Estás seguro de querer eliminar esta entrada?')">
+                            <button type="submit" class="p-1.5 bg-red-100 dark:bg-red-900/50 text-red-500 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-800" onclick="return confirm('¿Estás seguro de querer eliminar esta entrada?')">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </form>
@@ -124,13 +123,13 @@
                     @endforeach
                 </div>
             @else
-                <div class="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm">
-                    <div class="w-20 h-20 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-4xl">📝</span>
+                <div class="bg-white dark:bg-slate-900/50 backdrop-blur-md rounded-3xl p-12 text-center border border-slate-200 dark:border-slate-800 shadow-sm transition-all duration-300">
+                    <div class="w-20 h-20 bg-teal-50 dark:bg-teal-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     </div>
-                    <h3 class="font-bold text-slate-800 text-lg">Tu historia comienza hoy</h3>
-                    <p class="text-slate-500 text-sm mt-2 max-w-xs mx-auto mb-6">Este es un espacio seguro para tus pensamientos. Nadie más puede leer lo que escribes.</p>
-                    <button @click="activeTab = 'write'" class="px-8 py-3 bg-slate-900 text-white rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all transform hover:-translate-y-0.5">
+                    <h3 class="font-bold text-slate-800 dark:text-white text-lg">Tu historia comienza hoy</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-2 max-w-xs mx-auto mb-6">Este es un espacio seguro para tus pensamientos. Nadie más puede leer lo que escribes.</p>
+                    <button @click="activeTab = 'write'" class="px-8 py-3 bg-slate-900 dark:bg-teal-600 text-white rounded-xl font-bold shadow-lg hover:bg-slate-800 dark:hover:bg-teal-500 transition-all transform hover:-translate-y-0.5">
                         Empezar a escribir
                     </button>
                 </div>
@@ -157,19 +156,19 @@
                          :class="isDark ? 'bg-black/20 border-white/10' : 'bg-white/50 border-slate-200/50'">
                         
                         <!-- Mood Selector -->
-                        <div class="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
+                        <div class="flex items-center space-x-4">
                             <span class="text-xs font-bold uppercase tracking-wide opacity-70" :class="isDark ? 'text-white' : 'text-slate-500'">Ánimo:</span>
-                            @foreach(['😊', '😔', '😡', '😰', '😴', '😎', '🤔', '😭'] as $mood)
+                            @foreach(['😁', '🙂', '😐', '😔', '😰'] as $mood)
                                 <label class="cursor-pointer group relative">
                                     <input type="radio" name="mood" value="{{ $mood }}" x-model="selectedMood" class="peer sr-only">
-                                    <span class="text-2xl opacity-50 peer-checked:opacity-100 transition-opacity hover:opacity-100 hover:scale-110 transform inline-block">{{ $mood }}</span>
-                                    <span class="absolute -bottom-1 left-1/2 w-1 h-1 bg-current rounded-full opacity-0 peer-checked:opacity-100 transform -translate-x-1/2" :class="isDark ? 'bg-white' : 'bg-slate-800'"></span>
+                                    <span class="text-3xl opacity-50 peer-checked:opacity-100 transition-opacity hover:opacity-100 hover:scale-110 transform inline-block filter grayscale peer-checked:grayscale-0">{{ $mood }}</span>
+                                    <span class="absolute -bottom-2 left-1/2 w-1.5 h-1.5 bg-current rounded-full opacity-0 peer-checked:opacity-100 transform -translate-x-1/2 transition-all duration-300" :class="isDark ? 'bg-white' : 'bg-slate-800'"></span>
                                 </label>
                             @endforeach
                         </div>
 
                         <!-- Theme Toggle (Expanded) -->
-                        <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full no-scrollbar">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-xs font-bold uppercase tracking-wide opacity-70 mr-1 hidden sm:block" :class="isDark ? 'text-white' : 'text-slate-500'">Papel:</span>
                             
                             <!-- Light Themes -->
@@ -224,7 +223,7 @@
 
                         <button type="submit" class="flex items-center space-x-2 px-6 py-2.5 rounded-xl font-bold shadow-lg transform active:scale-95 transition-all"
                                 :class="isDark ? 'bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 shadow-none' : 'bg-slate-900 text-white hover:bg-slate-800'">
-                            <span>💾</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
                             <span>Guardar</span>
                         </button>
                     </div>

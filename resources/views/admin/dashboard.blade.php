@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Panel de Administración - ArcaneCode</title>
+    <title>Panel de Administración - conVivo</title>
+    <link rel="icon" href="{{ asset('images/logos/logo-unico.png') }}" type="image/png">
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     
@@ -26,7 +27,9 @@
             reports: @json($reports),
             specialists: @json($specialists),
             appointments: @json($appointments),
-            usersChart: @json($usersChart)
+            usersChart: @json($usersChart),
+            contacts: @json($contacts),
+            recursos: @json($recursos)
         };
     </script>
 </body>

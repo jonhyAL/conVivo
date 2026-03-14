@@ -36,6 +36,7 @@ class EspecialistaController extends Controller
             'especialidad' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'foto' => 'nullable|image|max:2048',
+            'icon_class' => 'nullable|string|max:50',
             'localidad' => 'required|in:Nezahualcóyotl,Puebla',
             'activo' => 'nullable'
         ]);
@@ -44,6 +45,7 @@ class EspecialistaController extends Controller
             'nombre' => $validated['nombre'],
             'especialidad' => $validated['especialidad'],
             'descripcion' => $validated['descripcion'] ?? null,
+            'icon_class' => $validated['icon_class'] ?? 'Stethoscope',
             'localidad' => $validated['localidad'],
             'activo' => $request->input('activo') == '1' ? 1 : 0
         ];
@@ -101,6 +103,7 @@ class EspecialistaController extends Controller
             'especialidad' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'foto' => 'nullable|image|max:2048',
+            'icon_class' => 'nullable|string|max:50',
             'localidad' => 'required|in:Nezahualcóyotl,Puebla',
             'activo' => 'nullable'
         ]);
@@ -110,6 +113,7 @@ class EspecialistaController extends Controller
             'nombre' => $validated['nombre'],
             'especialidad' => $validated['especialidad'],
             'descripcion' => $validated['descripcion'] ?? null,
+            'icon_class' => $validated['icon_class'] ?? 'Stethoscope',
             'localidad' => $validated['localidad'],
             'activo' => $request->input('activo') == '1' ? 1 : 0
         ];

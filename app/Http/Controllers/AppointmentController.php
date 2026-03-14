@@ -14,7 +14,22 @@ class AppointmentController extends Controller
     // Paso 1: Mostrar tipos de consulta
     public function selectType()
     {
-        return view('appointments.select-type');
+        $historial = \App\Models\Cita::where('user_id', auth()->id())
+            ->with(['horario.especialista'])
+            ->latest()
+            ->get();
+        $especialidades = \App\Models\Especialista::where('activo', true)
+            ->distinct()
+            ->pluck('especialidad');
+
+        return \Inertia\Inertia::render('Appointments', [
+            'user' => auth()->user(),
+            'historial' => $historial,
+            'especialidades' => $especialidades,
+            'errors' => session()->has('errors')
+                ? session('errors')->getBag('default')->all()
+                : [],
+        ]);
     }
 
     // Paso 2: Mostrar calendario y horarios disponibles

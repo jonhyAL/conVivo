@@ -11,7 +11,7 @@ export default function AppointmentPersonalInfo({ horario, user, oldInput = {}, 
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen font-sans text-gray-800 pb-safe relative">
+        <div className="bg-slate-50 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-200 pb-safe relative">
              {/* Background Decoration */}
              <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] animate-pulse"></div>
@@ -48,10 +48,10 @@ export default function AppointmentPersonalInfo({ horario, user, oldInput = {}, 
                 </div>
 
                 {/* Summary Card */}
-                <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-blue-200 shadow-lg shadow-teal-500/10 relative overflow-hidden">
+                <div className="bg-gradient-to-r from-teal-50/80 to-emerald-50/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-teal-200 shadow-lg shadow-teal-500/10 relative overflow-hidden">
                     <div className="absolute inset-0 bg-white/20 pointer-events-none"></div>
                     <h3 className="font-bold text-gray-800 mb-4 flex items-center relative z-10 text-lg">
-                        <span className="bg-teal-100 text-teal-600 p-2 rounded-lg mr-2">📋</span>
+                        <span className="bg-teal-100 text-teal-600 p-2 rounded-lg mr-2 flex items-center"><Clipboard size={16} /></span>
                         Resumen de tu cita
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700 relative z-10">
@@ -128,14 +128,14 @@ export default function AppointmentPersonalInfo({ horario, user, oldInput = {}, 
                         </div>
 
                         {/* Privacy Note */}
-                        <div className="bg-teal-50/50 rounded-xl p-5 border border-blue-100 shadow-sm backdrop-blur-sm">
+                        <div className="bg-teal-50/50 rounded-xl p-5 border border-teal-100 shadow-sm backdrop-blur-sm">
                              <div className="flex items-start">
                                 <div className="bg-teal-100 text-teal-600 p-2 rounded-full mr-3 flex-shrink-0">
                                     <Lock className="w-5 h-5" />
                                 </div>
-                                <div className="text-sm text-blue-900">
-                                    <p className="font-bold mb-1 text-base">Privacidad y Confidencialidad</p>
-                                    <p className="leading-relaxed opacity-90">Tus datos personales serán tratados con total confidencialidad y solo serán utilizados para gestionar tu cita. No compartimos tu información con terceros.</p>
+                                <div>
+                                    <p className="font-bold mb-1 text-base text-teal-900">Privacidad y Confidencialidad</p>
+                                    <p className="leading-relaxed opacity-90 text-teal-800">Tus datos personales serán tratados con total confidencialidad y solo serán utilizados para gestionar tu cita. No compartimos tu información con terceros.</p>
                                 </div>
                             </div>
                         </div>

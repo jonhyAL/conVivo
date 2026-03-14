@@ -11,6 +11,7 @@ class Especialista extends Model
         'especialidad',
         'descripcion',
         'foto',
+        'icon_class',
         'localidad',
         'activo'
     ];

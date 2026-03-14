@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Send, ArrowLeft, MoreVertical, Paperclip, Smile } from 'lucide-react';
+import { Search, Send, ArrowLeft, MoreVertical, Paperclip, Smile, MessageCircle } from 'lucide-react';
 import axios from 'axios';
 
 export default function ChatWidget({ currentUser }) {
@@ -11,23 +11,19 @@ export default function ChatWidget({ currentUser }) {
     const messagesEndRef = useRef(null);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Fetch conversations (admins/specialists)
     useEffect(() => {
         fetchConversations();
-        const interval = setInterval(fetchConversations, 10000); // Poll every 10s for new list updates
+        const interval = setInterval(fetchConversations, 10000);
         return () => clearInterval(interval);
     }, []);
 
-    // Poll messages when a conversation is open
     useEffect(() => {
         if (!selectedUser) return;
-        
         fetchMessages(selectedUser.id);
-        const interval = setInterval(() => fetchMessages(selectedUser.id), 3000); // Poll every 3s for chat
+        const interval = setInterval(() => fetchMessages(selectedUser.id), 3000);
         return () => clearInterval(interval);
     }, [selectedUser]);
 
-    // Scroll to bottom
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
@@ -44,9 +40,6 @@ export default function ChatWidget({ currentUser }) {
     const fetchMessages = async (userId) => {
         try {
             const response = await axios.get(`/chat/messages/${userId}`);
-            // Check if we need to update state to avoid re-renders if same data? 
-            // For now, just set it. React handles shallow comparison but arrays are new ref.
-            // Ideally, check length or last ID.
             setMessages(response.data);
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -58,7 +51,7 @@ export default function ChatWidget({ currentUser }) {
         if (!newMessage.trim() || !selectedUser) return;
 
         const tempMessage = {
-            id: Date.now(), // Temp ID
+            id: Date.now(),
             sender_id: currentUser.id,
             receiver_id: selectedUser.id,
             content: newMessage,
@@ -74,169 +67,163 @@ export default function ChatWidget({ currentUser }) {
                 receiver_id: selectedUser.id,
                 content: tempMessage.content
             });
-            fetchMessages(selectedUser.id); // Refresh to get real ID and timestamp
-            fetchConversations(); // Update last message in list
+            fetchMessages(selectedUser.id);
+            fetchConversations();
         } catch (error) {
             console.error('Error sending message:', error);
-            // Remove temp message?
         }
     };
 
-    const filteredConversations = conversations.filter(c => 
+    const filteredConversations = conversations.filter(c =>
         c.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    return (
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-[2.5rem] border border-slate-800 overflow-hidden shadow-2xl h-[70vh] sm:h-[600px] flex flex-col relative z-20 mx-4 sm:mx-0 mb-24 sm:mb-0">
-            {/* Header / Search */}
-            {!selectedUser ? (
-                <>
-                     <div className="p-4 border-b border-slate-800 bg-slate-900/50">
-                        <div className="relative mb-4">
-                            <input 
-                                type="text" 
-                                placeholder="Buscar especialista o tutor..." 
-                                className="w-full bg-slate-800 text-slate-200 placeholder-slate-500 rounded-xl py-3 pl-10 pr-4 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none transition-all"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <Search className="text-slate-500 absolute left-3 top-3.5" size={20} />
-                        </div>
-                        
-                        <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
-                            <button className="px-4 py-1.5 bg-teal-900/30 text-teal-400 text-sm font-medium rounded-full border border-teal-500/20 whitespace-nowrap">Admins</button>
-                            <button className="px-4 py-1.5 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-sm font-medium rounded-full border border-transparent hover:border-slate-700 transition whitespace-nowrap">Especialistas</button>
-                        </div>
-                    </div>
+    /* ── CONVERSATION LIST ── */
+    if (!selectedUser) {
+        return (
+            <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors">
 
-                    <div className="flex-1 overflow-y-auto">
-                        {filteredConversations.length > 0 ? (
-                            filteredConversations.map(conv => (
-                                <div 
-                                    key={conv.id}
-                                    onClick={() => setSelectedUser(conv)}
-                                    className="block hover:bg-slate-800/50 transition-colors border-b border-slate-800/50 cursor-pointer"
-                                >
-                                    <div className="flex items-center p-4">
-                                        <div className="relative flex-shrink-0">
-                                            <div className="w-12 h-12 rounded-full bg-indigo-900 flex items-center justify-center text-indigo-200 font-bold border border-white/10 uppercase">
-                                                {conv.name.substring(0, 2)}
-                                            </div>
-                                            {conv.unread_count > 0 && (
-                                                <span className="absolute top-0 right-0 w-3 h-3 bg-teal-500 rounded-full border-2 border-slate-900"></span>
-                                            )}
-                                        </div>
-                                        <div className="ml-4 flex-1 min-w-0">
-                                            <div className="flex justify-between items-baseline mb-1">
-                                                <h3 className="text-sm font-bold text-slate-100 truncate">{conv.name}</h3>
-                                                <span className="text-xs text-slate-500 font-medium">{conv.last_message_time}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <p className={`text-sm truncate font-medium ${conv.unread_count > 0 ? 'text-slate-100' : 'text-slate-400'}`}>
-                                                    {conv.last_message || 'Inicia una conversación...'}
-                                                </p>
-                                                {conv.unread_count > 0 && (
-                                                    <span className="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 bg-teal-600 text-white text-[10px] font-bold rounded-full min-w-[18px]">
-                                                        {conv.unread_count}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="p-8 text-center opacity-50">
-                                <p className="text-sm text-slate-600">No se encontraron contactos disponibles.</p>
-                            </div>
-                        )}
+                {/* Search bar */}
+                <div className="px-4 pt-4 pb-3 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800/60 transition-colors">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 w-4 h-4" />
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
+                            className="w-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2.5 pl-9 pr-4 border-0 focus:ring-2 focus:ring-teal-500/30 focus:outline-none transition-all text-sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                     </div>
-                </>
-            ) : (
-                <>
-                    {/* Chat View Header */}
-                    <div className="p-4 border-b border-slate-800 bg-slate-900 flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <button 
-                                onClick={() => setSelectedUser(null)}
-                                className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
+                </div>
+
+                {/* Conversation list */}
+                <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 transition-colors">
+                    {filteredConversations.length > 0 ? (
+                        filteredConversations.map(conv => (
+                            <button
+                                key={conv.id}
+                                onClick={() => setSelectedUser(conv)}
+                                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white dark:hover:bg-slate-800/50 transition-colors text-left"
                             >
-                                <ArrowLeft size={20} />
+                                {/* Avatar */}
+                                <div className="relative shrink-0">
+                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm uppercase shadow-md">
+                                        {conv.name.substring(0, 2)}
+                                    </div>
+                                    {conv.unread_count > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-teal-500 rounded-full border-2 border-slate-50 dark:border-slate-950 text-white text-[9px] font-black flex items-center justify-center">
+                                            {conv.unread_count > 9 ? '9+' : conv.unread_count}
+                                        </span>
+                                    )}
+                                </div>
+                                {/* Text */}
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex justify-between items-baseline mb-0.5">
+                                        <span className={`text-sm font-bold truncate transition-colors ${conv.unread_count > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-200'}`}>
+                                            {conv.name}
+                                        </span>
+                                        <span className="text-[11px] text-slate-400 dark:text-slate-500 shrink-0 ml-2">{conv.last_message_time}</span>
+                                    </div>
+                                    <p className={`text-xs truncate transition-colors ${conv.unread_count > 0 ? 'text-slate-700 dark:text-slate-300 font-medium' : 'text-slate-400 dark:text-slate-500'}`}>
+                                        {conv.last_message || 'Inicia una conversación...'}
+                                    </p>
+                                </div>
                             </button>
-                            <div className="w-10 h-10 rounded-full bg-indigo-900 flex items-center justify-center text-indigo-200 font-bold border border-white/10 uppercase text-sm">
-                                {selectedUser.name.substring(0, 2)}
+                        ))
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-20 gap-3 opacity-50">
+                            <div className="w-14 h-14 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                                <Search className="w-6 h-6 text-slate-400" />
                             </div>
-                            <div>
-                                <h3 className="text-sm font-bold text-slate-100">{selectedUser.name}</h3>
-                                <div className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                    <span className="text-xs text-slate-400">En línea</span>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">No se encontraron contactos.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    /* ── CHAT VIEW ── */
+    return (
+        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors">
+
+            {/* Chat contact header */}
+            <div className="shrink-0 flex items-center gap-3 px-4 py-3 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800/60 transition-colors">
+                <button
+                    onClick={() => setSelectedUser(null)}
+                    className="p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 rounded-xl transition"
+                >
+                    <ArrowLeft size={20} />
+                </button>
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-xs uppercase shadow">
+                    {selectedUser.name.substring(0, 2)}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{selectedUser.name}</p>
+                    <div className="flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500">En línea</span>
+                    </div>
+                </div>
+                <button className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 rounded-xl transition">
+                    <MoreVertical size={18} />
+                </button>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+                {messages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full gap-3 opacity-40">
+                        <div className="w-14 h-14 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500"><MessageCircle size={26} /></div>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 text-center max-w-[180px]">Comienza tu conversación con {selectedUser.name}</p>
+                    </div>
+                ) : (
+                    messages.map((msg, index) => {
+                        const isMe = msg.sender_id === currentUser.id;
+                        return (
+                            <div key={msg.id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
+                                    isMe
+                                        ? 'bg-teal-500 text-white rounded-tr-sm shadow-teal-500/20'
+                                        : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700/60'
+                                }`}>
+                                    <p className="leading-relaxed">{msg.content}</p>
+                                    <span className={`text-[10px] block mt-1 ${isMe ? 'text-teal-100/80 text-right' : 'text-slate-400 dark:text-slate-500'}`}>
+                                        {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '...'}
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-                        <button className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
-                            <MoreVertical size={20} />
+                        );
+                    })
+                )}
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input bar */}
+            <div className="shrink-0 px-4 py-3 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800/60 transition-colors">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                    <div className="flex-1 flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 border border-transparent focus-within:border-teal-500/50 focus-within:bg-white dark:focus-within:bg-slate-700 transition-all">
+                        <input
+                            type="text"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            placeholder="Escribe un mensaje..."
+                            className="flex-1 bg-transparent py-3 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
+                        />
+                        <button type="button" className="text-slate-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-400 transition ml-2">
+                            <Smile size={18} />
                         </button>
                     </div>
-
-                    {/* Chat Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/30">
-                        {messages.length === 0 ? (
-                            <div className="text-center py-10">
-                                <p className="text-slate-500 text-sm">Este es el comienzo de tu historial de mensajes con {selectedUser.name}.</p>
-                            </div>
-                        ) : (
-                            messages.map((msg, index) => {
-                                const isMe = msg.sender_id === currentUser.id;
-                                return (
-                                    <div key={msg.id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`
-                                            max-w-[75%] px-4 py-2 rounded-2xl text-sm 
-                                            ${isMe 
-                                                ? 'bg-teal-600 text-white rounded-tr-none' 
-                                                : 'bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700'}
-                                        `}>
-                                            <p>{msg.content}</p>
-                                            <span className={`text-[10px] block mt-1 ${isMe ? 'text-teal-200/70' : 'text-slate-500'}`}>
-                                                {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Enviando...'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        )}
-                        <div ref={messagesEndRef} />
-                    </div>
-
-                    {/* Input Area */}
-                    <div className="p-4 bg-slate-900 border-t border-slate-800">
-                        <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
-                            <button type="button" className="p-2 text-slate-500 hover:text-teal-400 transition-colors">
-                                <Paperclip size={20} />
-                            </button>
-                            <div className="flex-1 relative">
-                                <input
-                                    type="text"
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    placeholder="Escribe un mensaje..."
-                                    className="w-full bg-slate-800 text-slate-200 placeholder-slate-500 rounded-xl py-2.5 pl-4 pr-10 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none transition-all"
-                                />
-                                <button type="button" className="absolute right-3 top-2.5 text-slate-500 hover:text-teal-400 transition-colors">
-                                    <Smile size={20} />
-                                </button>
-                            </div>
-                            <button 
-                                type="submit" 
-                                disabled={!newMessage.trim()}
-                                className="p-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-900/20"
-                            >
-                                <Send size={20} />
-                            </button>
-                        </form>
-                    </div>
-                </>
-            )}
+                    <button
+                        type="submit"
+                        disabled={!newMessage.trim()}
+                        className="w-11 h-11 bg-teal-500 hover:bg-teal-400 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl flex items-center justify-center transition-all shadow-lg shadow-teal-500/25 shrink-0"
+                    >
+                        <Send size={18} />
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

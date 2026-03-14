@@ -22,11 +22,11 @@ export default function AppointmentSuccess({ cita }) {
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen font-sans text-slate-600 pb-safe relative">
+        <div className="bg-slate-50 dark:bg-slate-950 min-h-screen font-sans text-slate-600 dark:text-slate-300 pb-safe relative">
             {/* Background Decoration */}
              <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-0 right-0 w-80 h-80 bg-teal-200/40 rounded-full blur-[80px] opacity-60"></div>
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-200/40 rounded-full blur-[80px] opacity-60"></div>
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-200/40 rounded-full blur-[80px] opacity-60"></div>
             </div>
 
             <div className="relative z-10 max-w-lg mx-auto px-4 py-8 mb-20">
@@ -43,7 +43,7 @@ export default function AppointmentSuccess({ cita }) {
                 {/* Ticket Card */}
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-6 relative">
                      {/* Top Pattern */}
-                    <div className="h-2 bg-gradient-to-r from-teal-400 to-blue-500"></div>
+                    <div className="h-2 bg-gradient-to-r from-teal-400 to-emerald-500"></div>
 
                     <div className="p-6">
                         {/* Reference */}
@@ -60,14 +60,14 @@ export default function AppointmentSuccess({ cita }) {
                                 {cita?.especialista?.foto ? (
                                     <img src={`/storage/${cita.especialista.foto}`} className="w-16 h-16 rounded-full object-cover shadow-sm bg-slate-100" alt="Especialista" />
                                 ) : (
-                                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-2xl shadow-sm">
-                                        👨‍⚕️
+                                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center shadow-sm">
+                                        <User size={28} className="text-slate-400" />
                                     </div>
                                 )}
                                 <div>
                                     <p className="text-xs text-slate-400 font-bold uppercase mb-0.5">Especialista</p>
                                     <p className="font-bold text-lg text-slate-800 leading-tight">{cita?.especialista?.nombre || 'Especialista'}</p>
-                                    <span className="inline-block mt-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-bold rounded">{cita?.especialista?.especialidad || 'General'}</span>
+                                    <span className="inline-block mt-1 px-2 py-0.5 bg-teal-50 text-teal-600 text-xs font-bold rounded">{cita?.especialista?.especialidad || 'General'}</span>
                                 </div>
                             </div>
 
@@ -94,10 +94,10 @@ export default function AppointmentSuccess({ cita }) {
                             </div>
 
                             {/* Location */}
-                            <div className="flex items-start gap-3 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
-                                <MapPin className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex items-start gap-3 bg-teal-50/50 p-3 rounded-xl border border-teal-100/50">
+                                <MapPin className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-xs text-blue-400 font-bold uppercase mb-0.5">Ubicación</p>
+                                    <p className="text-xs text-teal-600 font-bold uppercase mb-0.5">Ubicación</p>
                                     <p className="text-sm font-semibold text-slate-700">{cita?.localidad}</p>
                                 </div>
                             </div>
@@ -113,8 +113,8 @@ export default function AppointmentSuccess({ cita }) {
                 </div>
 
                 {/* Info Box */}
-                 <div className="bg-blue-50 p-4 rounded-2xl mb-20 text-sm text-blue-800 flex items-start gap-3">
-                    <LifeBuoy className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                 <div className="bg-teal-50 p-4 rounded-2xl mb-20 text-sm text-teal-800 flex items-start gap-3">
+                    <LifeBuoy className="w-5 h-5 flex-shrink-0 mt-0.5 text-teal-500" />
                     <p className="leading-relaxed">
                         Hemos enviado un correo de confirmación a <strong>{cita?.email_cliente}</strong>. Por favor llega 10 minutos antes.
                     </p>

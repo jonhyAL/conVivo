@@ -5,7 +5,7 @@
             <!-- Logo y descripción -->
             <div class="col-span-1 md:col-span-2">
                 <div class="flex items-center mb-4">
-                    <img src="{{ asset('images/logos/logo-fullwhite.png') }}" alt="ArcaneCode" class="h-12 w-auto opacity-80 hover:opacity-100 transition duration-300">
+                    <img src="{{ asset('images/logos/logo-fullwhite.png') }}" alt="conVivo" class="h-12 w-auto opacity-80 hover:opacity-100 transition duration-300">
                 </div>
                 <p class="text-slate-400 text-sm mb-4 max-w-md font-light">
                     Solución integral SaaS para la gestión de la convivencia escolar, salud mental y seguridad en instituciones educativas privadas.
@@ -69,7 +69,7 @@
         <div class="border-t border-slate-800 mt-8 pt-8">
             <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <p class="text-slate-500 text-sm">
-                    © {{ date('Y') }} ArcaneCode. Todos los derechos reservados.
+                    © {{ date('Y') }} conVivo. Todos los derechos reservados.
                 </p>
                 <div class="flex space-x-6">
                     <a href="#" class="text-white/60 hover:text-white transition-colors text-sm">

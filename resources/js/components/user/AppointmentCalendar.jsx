@@ -25,7 +25,7 @@ export default function AppointmentCalendar({ especialistas, sessionData }) {
     // We need to group them here.
 
     return (
-        <div className="bg-gray-50 min-h-screen font-sans text-gray-800 pb-safe relative">
+        <div className="bg-slate-50 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-200 pb-safe relative">
             {/* Background Decoration */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] animate-pulse"></div>
@@ -108,8 +108,8 @@ export default function AppointmentCalendar({ especialistas, sessionData }) {
                                                 {especialista.foto ? (
                                                     <img src={`/storage/${especialista.foto}`} alt={especialista.nombre} className="w-24 h-24 rounded-full object-cover border-4 border-white/30 shadow-2xl" />
                                                 ) : (
-                                                    <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-4xl border-4 border-white/30 shadow-2xl text-white">
-                                                        👤
+                                                    <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border-4 border-white/30 shadow-2xl text-white">
+                                                        <User size={40} className="text-white/80" />
                                                     </div>
                                                 )}
                                                 <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-400 border-2 border-indigo-600 rounded-full" title="Disponible"></div>
@@ -136,7 +136,7 @@ export default function AppointmentCalendar({ especialistas, sessionData }) {
                                                 {Object.entries(horariosByDate).map(([fecha, hs]) => (
                                                     <div key={fecha}>
                                                         <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                                            <span className="bg-teal-100 text-teal-600 p-2 rounded-lg mr-3 shadow-sm">🗓️</span>
+                                                            <span className="bg-teal-100 text-teal-600 p-2 rounded-lg mr-3 shadow-sm flex items-center"><Calendar size={16} /></span>
                                                             <span className="capitalize">
                                                                 {new Date(fecha + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                                                             </span>
@@ -154,8 +154,8 @@ export default function AppointmentCalendar({ especialistas, sessionData }) {
                                                                     />
                                                                     <div className={`bg-white/50 border-2 rounded-xl p-4 text-center transition-all cursor-pointer h-full flex flex-col justify-center
                                                                         ${selectedHorario == h.id 
-                                                                            ? 'border-blue-600 bg-teal-50/90 shadow-lg shadow-teal-500/20 text-teal-700' 
-                                                                            : 'border-gray-200 hover:bg-white hover:border-blue-400 text-gray-800'
+                                                                            ? 'border-teal-600 bg-teal-50/90 shadow-lg shadow-teal-500/20 text-teal-700' 
+                                                                            : 'border-slate-200 hover:bg-white hover:border-teal-400 text-slate-800'
                                                                         }`}>
                                                                         <div className="text-xl font-bold">
                                                                             {h.hora_inicio.substring(0, 5)}

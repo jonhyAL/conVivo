@@ -8,6 +8,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Admin\EspecialistaController;
 use App\Http\Controllers\Admin\HorarioController;
+use App\Http\Controllers\Admin\RecursoProtocoloController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
@@ -15,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 Route::view('/nosotros', 'public.about')->name('public.about');
 Route::view('/servicios', 'public.services')->name('public.services');
 Route::view('/contacto', 'public.contact')->name('public.contact');
+Route::post('/contacto/enviar', [App\Http\Controllers\ContactController::class, 'store'])->name('contacts.store');
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,9 +27,11 @@ Route::get('/reportes', [ReportController::class, 'index'])->name('reports.creat
 Route::post('/reportes', [ReportController::class, 'store'])->name('reports.store');
 
 // Ruta de recursos y protocolos
-Route::get('/recursos-protocolos', function () {
-    return view('resources');
-})->name('resources');
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::post('/contacts/{id}/toggle-read', [App\Http\Controllers\ContactController::class, 'toggleRead'])->name('contacts.toggle');
+    Route::delete('/contacts/{id}', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
+});
 
 // Rutas de citas/consultas (protegidas por auth)
 Route::middleware('auth')->prefix('citas')->name('appointments.')->group(function () {
@@ -59,6 +63,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/mood', [DashboardController::class, 'storeMood'])->name('dashboard.mood');
 
+    // Recursos y protocolos (Inertia SPA)
+    Route::get('/recursos-protocolos', function () {
+        $recursos   = \App\Models\RecursoProtocolo::where('item_type', 'recurso')
+            ->where('is_active', true)->orderBy('sort_order')->orderBy('created_at', 'desc')->get();
+        $protocolos = \App\Models\RecursoProtocolo::where('item_type', 'protocolo')
+            ->where('is_active', true)->orderBy('sort_order')->orderBy('created_at', 'desc')->get();
+        return \Inertia\Inertia::render('Resources', [
+            'user'       => auth()->user(),
+            'recursos'   => $recursos->values()->toArray(),
+            'protocolos' => $protocolos->values()->toArray(),
+        ]);
+    })->name('resources');
+
     // Rutas de Perfil
     Route::prefix('perfil')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
@@ -73,6 +90,9 @@ Route::middleware('auth')->group(function () {
     });
     
     // Diario Personal
+    // Protocol file download (auth-protected)
+    Route::get('/protocolos/{recurso}/descargar', [RecursoProtocoloController::class, 'download'])->name('protocolo.download');
+
     Route::prefix('diario')->name('journal.')->group(function () {
         Route::get('/', [\App\Http\Controllers\JournalController::class, 'index'])->name('index');
         Route::post('/', [\App\Http\Controllers\JournalController::class, 'store'])->name('store');
@@ -117,4 +137,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Gestión de reportes
     Route::get('/reportes/{report}', [ReportController::class, 'show']);
     Route::put('/reportes/{report}/estado', [ReportController::class, 'updateStatus']);
+
+    // Recursos y protocolos CRUD
+    Route::apiResource('recursos', RecursoProtocoloController::class)
+        ->parameters(['recursos' => 'recurso']);
 });

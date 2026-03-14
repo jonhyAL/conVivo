@@ -1,6 +1,7 @@
 import './bootstrap';
 import { createRoot } from 'react-dom/client';
 import React from 'react';
+import { createInertiaApp } from '@inertiajs/react';
 
 // Helper for dynamic component loading
 const loadComponent = (id, componentImport, getProps = () => ({})) => {
@@ -64,7 +65,9 @@ loadComponent('user-dashboard-root',
 loadComponent('user-resources-root', 
     () => import('./components/user/Resources'),
     (el) => ({
-        user: JSON.parse(el.dataset.user || '{}')
+        user:       JSON.parse(el.dataset.user      || '{}'),
+        recursos:   JSON.parse(el.dataset.recursos   || '[]'),
+        protocolos: JSON.parse(el.dataset.protocolos || '[]'),
     })
 );
 
@@ -132,3 +135,30 @@ loadComponent('mobile-header-root',
         user: JSON.parse(el.dataset.user || '{}')
     })
 );
+
+/**
+ * Inertia SPA — Panel pages (Dashboard, Profile, Resources, Appointments)
+ * Only initializes when the Inertia root #app div is present.
+ */
+window.__inertiaActive = !!document.getElementById('app');
+
+if (window.__inertiaActive) {
+    createInertiaApp({
+        resolve: (name) => {
+            const pages = import.meta.glob('./pages/**/*.jsx', { eager: true });
+            const page = pages[`./pages/${name}.jsx`];
+            if (!page) throw new Error(`Inertia page not found: ${name}`);
+            return page;
+        },
+        setup({ el, App, props }) {
+            createRoot(el).render(
+                <React.StrictMode>
+                    <App {...props} />
+                </React.StrictMode>
+            );
+        },
+        progress: {
+            color: '#0d9488', // teal-600
+        },
+    });
+}

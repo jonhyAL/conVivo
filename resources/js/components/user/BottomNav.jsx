@@ -1,32 +1,36 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Home, Book, LifeBuoy, Calendar, User, AlertTriangle, X } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Home, Book, Calendar, User, AlertTriangle, X } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 
 export default function BottomNav({ active }) {
     const [showSOSSlider, setShowSOSSlider] = useState(false);
 
     return (
         <>
-            <nav className="fixed bottom-0 left-0 w-full bg-slate-900/90 backdrop-blur-xl border-t border-slate-800 z-50 cursor-pointer" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-                <div className="grid grid-cols-5 h-16 max-w-7xl mx-auto">
+            {/* Floating bottom bar: pill nav + SOS side by side */}
+            <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-center px-4"
+                style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 14px)' }}>
+
+                {/* Nav pill */}
+                <div className="flex items-center h-14 md:h-16 rounded-full bg-white/80 dark:bg-slate-800/75 backdrop-blur-2xl border border-slate-200/60 dark:border-white/[0.08] gap-1 px-2 md:px-3 md:gap-1"
+                    style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.55)' }}>
                     <NavButton href="/dashboard" icon={Home} label="Inicio" active={active === 'dashboard'} />
                     <NavButton href="/recursos-protocolos" icon={Book} label="Recursos" active={active === 'resources'} />
-                    
-                    <button 
-                        onClick={() => setShowSOSSlider(true)}
-                        className={`flex flex-col items-center justify-center transition group relative ${active === 'sos' ? 'text-red-400 bg-white/5' : 'text-red-500 hover:text-red-400 hover:bg-white/5'}`}
-                    >
-                        <div className="bg-red-900/20 rounded-full p-2 mb-1 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.4)] relative">
-                            <LifeBuoy className="w-6 h-6 animate-pulse" />
-                            {/* Ripple Effect hint */}
-                            <span className="absolute inset-0 rounded-full animate-ping bg-red-500/20"></span>
-                        </div>
-                        <span className="text-[9px] font-bold tracking-wide">SOS</span>
-                    </button>
-
                     <NavButton href="/citas/agendar" icon={Calendar} label="Citas" active={active === 'appointments'} />
                     <NavButton href="/perfil" icon={User} label="Perfil" active={active === 'profile'} />
                 </div>
-            </nav>
+
+                {/* SOS — same row, vertically centered with the pill */}
+                <button
+                    onClick={() => setShowSOSSlider(true)}
+                    className="relative ml-3 flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-red-500 rounded-full shrink-0"
+                    style={{ boxShadow: '0 0 20px rgba(239,68,68,0.5), 0 6px 20px rgba(0,0,0,0.35)' }}
+                    aria-label="Emergencia SOS"
+                >
+                    <AlertTriangle className="w-6 h-6 text-white" strokeWidth={2.5} />
+                    <span className="absolute inset-0 rounded-full animate-ping bg-red-400/25 pointer-events-none"></span>
+                </button>
+            </div>
 
             {/* SOS Confirmation Overlay */}
             {showSOSSlider && (
@@ -133,10 +137,19 @@ function SlideToSOS({ onCancel }) {
 }
 
 function NavButton({ href, icon: Icon, label, active }) {
+    // Use Inertia Link for SPA navigation when inside an Inertia app,
+    // otherwise fall back to a plain <a> (e.g. standalone Blade page mounts)
+    const NavComp = window.__inertiaActive ? Link : 'a';
     return (
-        <a href={href} className={`flex flex-col items-center justify-center transition group ${active ? 'text-teal-400 bg-white/5' : 'text-slate-400 hover:text-teal-400 hover:bg-white/5'}`}>
-            <Icon className={`w-6 h-6 mb-1 transition-transform ${active ? '-translate-y-0.5' : 'group-hover:-translate-y-0.5'}`} />
-            <span className="text-[9px] font-medium tracking-wide">{label}</span>
-        </a>
+        <NavComp href={href} className={`flex items-center gap-1.5 rounded-full px-3 py-2.5 md:px-5 md:py-3 transition-all duration-200 ${
+            active
+                ? 'bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+        }`}>
+            <Icon className="w-5 h-5 md:w-[22px] md:h-[22px] shrink-0" strokeWidth={active ? 2.5 : 1.8} />
+            {active && (
+                <span className="text-xs md:text-sm font-bold whitespace-nowrap">{label}</span>
+            )}
+        </NavComp>
     );
 }

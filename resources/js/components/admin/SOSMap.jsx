@@ -84,12 +84,12 @@ export default function SOSMap({ alerts: initialAlerts }) {
             : 'bg-red-500/20 text-red-300 border-red-500/20';
 
     return (
-        <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
-            <h4 className="text-lg font-medium text-white mb-4">Alertas SOS Recientes</h4>
+        <div className="bg-white/5 border border-white/10 p-4 rounded-xl h-full flex flex-col">
+            <h4 className="text-lg font-medium text-white mb-3 shrink-0">Alertas SOS Recientes</h4>
             
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 {/* Map Section */}
-                <div className="h-[400px] lg:w-2/3 w-full rounded-lg overflow-hidden border border-white/10 z-0 relative">
+                <div className="h-52 shrink-0 lg:h-auto lg:flex-[2] w-full rounded-lg overflow-hidden border border-white/10 z-0 relative">
                     <MapContainer center={defaultCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -153,7 +153,7 @@ export default function SOSMap({ alerts: initialAlerts }) {
                 </div>
                 
                 {/* Scrollable list */}
-                <div className="lg:w-1/3 w-full space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                <div className="flex-1 min-h-0 lg:flex-[1] space-y-3 overflow-y-auto pr-1">
                     {alerts.length === 0 && <p className="text-gray-400">Sin alertas.</p>}
                     {alerts.map(alert => {
                         const isSelected = selectedAlert && selectedAlert.id === alert.id;

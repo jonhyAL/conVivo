@@ -1,14 +1,15 @@
 import React from 'react';
-import { LayoutDashboard, Users, Calendar, FileText, UserCheck, ShieldAlert, LogOut, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, FileText, UserCheck, ShieldAlert, LogOut, MessageSquare, Mail } from 'lucide-react';
 
 export default function Sidebar({ activeSection, setActiveSection }) {
     const menuItems = [
         { id: 'inicio', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'chat', label: 'Mensajes', icon: MessageSquare },
+        { id: 'mensajes', label: 'Buzón', icon: Mail },
         { id: 'citas', label: 'Citas', icon: Calendar },
         { id: 'especialistas', label: 'Especialistas', icon: UserCheck },
         { id: 'usuarios', label: 'Usuarios', icon: Users },
         { id: 'reportes', label: 'Reportes', icon: FileText },
+        { id: 'chat', label: 'Chat en Vivo', icon: MessageSquare },
     ];
 
     const logout = () => {

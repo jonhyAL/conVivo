@@ -1,0 +1,170 @@
+{
+  "_leaflet-BPCawAhW.js": {
+    "file": "assets/leaflet-BPCawAhW.js",
+    "name": "leaflet",
+    "imports": [
+      "_vendor--1bvVCgm.js"
+    ],
+    "css": [
+      "assets/leaflet-CLLlcC51.css"
+    ],
+    "assets": [
+      "assets/marker-icon-hN30_KVU.png",
+      "assets/marker-shadow-f7SaPCxT.png",
+      "assets/layers-BWBAp2CZ.png",
+      "assets/layers-2x-Bpkbi35X.png"
+    ]
+  },
+  "_leaflet-CLLlcC51.css": {
+    "file": "assets/leaflet-CLLlcC51.css",
+    "src": "_leaflet-CLLlcC51.css"
+  },
+  "_recharts-C3VdsziV.js": {
+    "file": "assets/recharts-C3VdsziV.js",
+    "name": "recharts",
+    "imports": [
+      "_vendor--1bvVCgm.js"
+    ]
+  },
+  "_vendor--1bvVCgm.js": {
+    "file": "assets/vendor--1bvVCgm.js",
+    "name": "vendor"
+  },
+  "node_modules/leaflet/dist/images/layers-2x.png": {
+    "file": "assets/layers-2x-Bpkbi35X.png",
+    "src": "node_modules/leaflet/dist/images/layers-2x.png"
+  },
+  "node_modules/leaflet/dist/images/layers.png": {
+    "file": "assets/layers-BWBAp2CZ.png",
+    "src": "node_modules/leaflet/dist/images/layers.png"
+  },
+  "node_modules/leaflet/dist/images/marker-icon.png": {
+    "file": "assets/marker-icon-hN30_KVU.png",
+    "src": "node_modules/leaflet/dist/images/marker-icon.png"
+  },
+  "node_modules/leaflet/dist/images/marker-shadow.png": {
+    "file": "assets/marker-shadow-f7SaPCxT.png",
+    "src": "node_modules/leaflet/dist/images/marker-shadow.png"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-BcSMLmnd.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-BoOAuAqw.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js",
+      "_recharts-C3VdsziV.js"
+    ],
+    "dynamicImports": [
+      "resources/js/components/Welcome.jsx",
+      "resources/js/components/About.jsx",
+      "resources/js/components/Services.jsx",
+      "resources/js/components/Contact.jsx",
+      "resources/js/components/HeroReact.jsx",
+      "resources/js/components/admin/AdminDashboard.jsx",
+      "resources/js/components/user/AppointmentCalendar.jsx",
+      "resources/js/components/user/AppointmentPersonalInfo.jsx",
+      "resources/js/components/user/AppointmentSuccess.jsx"
+    ]
+  },
+  "resources/js/components/About.jsx": {
+    "file": "assets/About-DV2Iq835.js",
+    "name": "About",
+    "src": "resources/js/components/About.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js"
+    ]
+  },
+  "resources/js/components/Contact.jsx": {
+    "file": "assets/Contact-DJkt7hkc.js",
+    "name": "Contact",
+    "src": "resources/js/components/Contact.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js"
+    ]
+  },
+  "resources/js/components/HeroReact.jsx": {
+    "file": "assets/HeroReact-uFUoavvb.js",
+    "name": "HeroReact",
+    "src": "resources/js/components/HeroReact.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js"
+    ]
+  },
+  "resources/js/components/Services.jsx": {
+    "file": "assets/Services-Dq7uik-S.js",
+    "name": "Services",
+    "src": "resources/js/components/Services.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js"
+    ]
+  },
+  "resources/js/components/Welcome.jsx": {
+    "file": "assets/Welcome-BzIOurvT.js",
+    "name": "Welcome",
+    "src": "resources/js/components/Welcome.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js",
+      "resources/js/components/HeroReact.jsx"
+    ]
+  },
+  "resources/js/components/admin/AdminDashboard.jsx": {
+    "file": "assets/AdminDashboard-Chn5D23k.js",
+    "name": "AdminDashboard",
+    "src": "resources/js/components/admin/AdminDashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js",
+      "_leaflet-BPCawAhW.js",
+      "resources/js/app.jsx",
+      "_recharts-C3VdsziV.js"
+    ]
+  },
+  "resources/js/components/user/AppointmentCalendar.jsx": {
+    "file": "assets/AppointmentCalendar-DsRa33hD.js",
+    "name": "AppointmentCalendar",
+    "src": "resources/js/components/user/AppointmentCalendar.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js",
+      "resources/js/app.jsx",
+      "_recharts-C3VdsziV.js"
+    ]
+  },
+  "resources/js/components/user/AppointmentPersonalInfo.jsx": {
+    "file": "assets/AppointmentPersonalInfo-CSZ3_mg8.js",
+    "name": "AppointmentPersonalInfo",
+    "src": "resources/js/components/user/AppointmentPersonalInfo.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js",
+      "resources/js/app.jsx",
+      "_recharts-C3VdsziV.js"
+    ]
+  },
+  "resources/js/components/user/AppointmentSuccess.jsx": {
+    "file": "assets/AppointmentSuccess-BrGlH0TU.js",
+    "name": "AppointmentSuccess",
+    "src": "resources/js/components/user/AppointmentSuccess.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor--1bvVCgm.js",
+      "resources/js/app.jsx",
+      "_recharts-C3VdsziV.js"
+    ]
+  }
+}
